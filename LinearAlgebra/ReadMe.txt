@@ -1,5 +1,6 @@
 The majority of this code is heavily inspired or taken from the code
 of Zhang Ming available at https://code.google.com/p/tspl/
+I rewrote some of it to fit my more simplistic needs, and also for my own understanding
 
 Here is his copyright, license etc:
 
