@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{e8598b34-1b24-4a7b-8c64-23a60fcc8d2d}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{4675f958-26f0-4d4c-8d00-cc81ddadd8dc}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Boiler">
+      <UniqueIdentifier>{939e427d-8c54-4e44-85b3-e6962fa2e08c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OpenCL">
+      <UniqueIdentifier>{789e1c57-5c52-458a-850e-50a4d4891f31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DM">
+      <UniqueIdentifier>{65c79df2-e309-4065-a05c-c6acfccb361d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{d7aee6c0-a17c-41ef-8469-7c6dbbab58a4}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Boiler">
+      <UniqueIdentifier>{e45707d3-786c-47c1-ba37-210393ff3989}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\OpenCL">
+      <UniqueIdentifier>{2fb0ac2e-fbf2-4e07-8b5b-1383f3c3a81d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DM">
+      <UniqueIdentifier>{153c2892-f721-4bff-ac90-9a4c517ac897}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\LinearAlgebra">
+      <UniqueIdentifier>{096b35d7-9478-4344-9564-4885c9a502bd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DMDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DialogPlugIn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NumEdit.cpp">
+      <Filter>Source Files\Boiler</Filter>
+    </ClCompile>
+    <ClCompile Include="amsEdit.cpp">
+      <Filter>Source Files\Boiler</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files\Boiler</Filter>
+    </ClCompile>
+    <ClCompile Include="clWrapper\clContext.cpp">
+      <Filter>Source Files\OpenCL</Filter>
+    </ClCompile>
+    <ClCompile Include="clWrapper\clStatic.cpp">
+      <Filter>Source Files\OpenCL</Filter>
+    </ClCompile>
+    <ClCompile Include="WorkerClass.cpp">
+      <Filter>Source Files\Boiler</Filter>
+    </ClCompile>
+    <ClCompile Include="clWrapper\stdafx.cpp">
+      <Filter>Source Files\OpenCL</Filter>
+    </ClCompile>
+    <ClCompile Include="clWrapper\Misc.cpp">
+      <Filter>Source Files\OpenCL</Filter>
+    </ClCompile>
+    <ClCompile Include="clWrapper\clFourier.cpp">
+      <Filter>Source Files\OpenCL</Filter>
+    </ClCompile>
+    <ClCompile Include="clWrapper\clKernel.cpp">
+      <Filter>Source Files\OpenCL</Filter>
+    </ClCompile>
+    <ClCompile Include="clWrapper\clDevice.cpp">
+      <Filter>Source Files\OpenCL</Filter>
+    </ClCompile>
+    <ClCompile Include="Alignment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DMWrapper\DMROI.cpp">
+      <Filter>Source Files\DM</Filter>
+    </ClCompile>
+    <ClCompile Include="DMWrapper\DMImage.cpp">
+      <Filter>Source Files\DM</Filter>
+    </ClCompile>
+    <ClCompile Include="DMWrapper\DMListener.cpp">
+      <Filter>Source Files\DM</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DMDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files\Boiler</Filter>
+    </ClInclude>
+    <ClInclude Include="NumEdit.h">
+      <Filter>Header Files\Boiler</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files\Boiler</Filter>
+    </ClInclude>
+    <ClInclude Include="DialogPlugIn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="amsEdit.h">
+      <Filter>Header Files\Boiler</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\Auto.h">
+      <Filter>Header Files\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\clContext.h">
+      <Filter>Header Files\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\clDevice.h">
+      <Filter>Header Files\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\clEvent.h">
+      <Filter>Header Files\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\clKernel.h">
+      <Filter>Header Files\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\clMemory.h">
+      <Filter>Header Files\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\clStatic.h">
+      <Filter>Header Files\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\clWorkgroup.h">
+      <Filter>Header Files\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\clWrapper.h">
+      <Filter>Header Files\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\Manual.h">
+      <Filter>Header Files\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\Notify.h">
+      <Filter>Header Files\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\targetver.h">
+      <Filter>Header Files\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="WorkerClass.h">
+      <Filter>Header Files\Boiler</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\stdafx.h">
+      <Filter>Header Files\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\Misc.h">
+      <Filter>Header Files\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\clFourier.h">
+      <Filter>Header Files\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="clArgStore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\Enums.h">
+      <Filter>Header Files\OpenCL</Filter>
+    </ClInclude>
+    <ClInclude Include="Alignment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Kernels.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DMWrapper\DMROI.h">
+      <Filter>Header Files\DM</Filter>
+    </ClInclude>
+    <ClInclude Include="DMWrapper\DMout.h">
+      <Filter>Header Files\DM</Filter>
+    </ClInclude>
+    <ClInclude Include="DMWrapper\DMListener.h">
+      <Filter>Header Files\DM</Filter>
+    </ClInclude>
+    <ClInclude Include="DMWrapper\DMListenable.h">
+      <Filter>Header Files\DM</Filter>
+    </ClInclude>
+    <ClInclude Include="DMWrapper\DMImage.h">
+      <Filter>Header Files\DM</Filter>
+    </ClInclude>
+    <ClInclude Include="DMWrapper\DMColmap.h">
+      <Filter>Header Files\DM</Filter>
+    </ClInclude>
+    <ClInclude Include="DMWrapper\stdafx.h">
+      <Filter>Header Files\DM</Filter>
+    </ClInclude>
+    <ClInclude Include="DMWrapper\DMImage-ReadWrite.h">
+      <Filter>Header Files\DM</Filter>
+    </ClInclude>
+    <ClInclude Include="LinearAlgebra\Cholesky.h">
+      <Filter>Header Files\LinearAlgebra</Filter>
+    </ClInclude>
+    <ClInclude Include="LinearAlgebra\Matrix.h">
+      <Filter>Header Files\LinearAlgebra</Filter>
+    </ClInclude>
+    <ClInclude Include="LinearAlgebra\Decomposition.h">
+      <Filter>Header Files\LinearAlgebra</Filter>
+    </ClInclude>
+    <ClInclude Include="LinearAlgebra\MatrixOperations.h">
+      <Filter>Header Files\LinearAlgebra</Filter>
+    </ClInclude>
+    <ClInclude Include="LinearAlgebra\LowerUpper.h">
+      <Filter>Header Files\LinearAlgebra</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="clAlign.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
