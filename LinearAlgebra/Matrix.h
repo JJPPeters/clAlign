@@ -9,7 +9,7 @@ public:
 	Matrix();
 
 	// Creates Matrix as copy of another matrix
-	Matrix(const Matrix<T> &mat);
+	// Matrix(const Matrix<T> &RHS);
 
 	// Creates Matrix of size (rows*cols) filled with zeros
 	Matrix(int rows, int cols);

@@ -66,7 +66,7 @@ static char* sShiftImage =
 "	{	\n"
 "		int Index = xid + yid*width; \n"
 "		int xF = xid - width / 2; \n"
-"		int yF = height / 2 - yid; \n"
+"		int yF = height / 2 - yid - 1; \n"
 "		float c = cos(2*M_PI * (shiftX*xF / width + shiftY*yF / height) ); \n"
 "		float s = -sin(2*M_PI * (shiftX*xF / width + shiftY*yF / height) ); \n"
 "		fft[Index].x = fft[Index].x * c - fft[Index].y * s; \n"

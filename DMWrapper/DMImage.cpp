@@ -19,7 +19,6 @@ void DMImage::fromFront()
 void DMImage::fromReal(std::string title, int bytes, int x, int y)
 {
 	Image = DM::RealImage(title, bytes, x, y);
-	width = 1;
 	Image.GetOrCreateImageDocument().Show();
 	Image.GetOrCreateImageDocument().Clean();
 	Display = Image.GetImageDisplay(0);
@@ -30,7 +29,6 @@ void DMImage::fromReal(std::string title, int bytes, int x, int y)
 void DMImage::fromReal(std::string title, int bytes, int x, int y, long t, long l, long b, long r)
 {
 	Image = DM::RealImage(title, bytes, x, y);
-	width = 1;
 	Image.GetOrCreateImageDocument().ShowAtRect(t, l, b, r);
 	Image.GetOrCreateImageDocument().Clean();
 	Display = Image.GetImageDisplay(0);

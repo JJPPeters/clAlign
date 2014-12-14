@@ -34,6 +34,35 @@ public:
 	boost::shared_ptr<DMListener> DataListener;
 
 	DMImage() : ROIListener(new DMListener) {}
+
+	template <typename T>
+	DMImage(std::vector<std::complex<T>> data, std::string title, int bytes, int x, int y) : ROIListener(new DMListener)
+	{
+		fromReal(title, bytes, x, y);
+		SetComplexData(data, SHOW_REAL);
+	}
+
+	template <typename T>
+	DMImage(std::vector<std::complex<T>> data, std::string title, int bytes, int x, int y, long t, long l, long b, long r) : ROIListener(new DMListener)
+	{
+		fromReal(title, bytes, x, y, t, l, b, r);
+		SetComplexData(data, SHOW_REAL);
+	}
+
+	template <typename T>
+	DMImage(std::vector<T> data, std::string title, int bytes, int x, int y) : ROIListener(new DMListener)
+	{
+		fromReal(title, bytes, x, y);
+		SetRealData(data);
+	}
+
+	template <typename T>
+	DMImage(std::vector<T> data, std::string title, int bytes, int x, int y, long t, long l, long b, long r) : ROIListener(new DMListener)
+	{
+		fromReal(title, bytes, x, y, t, l, b, r);
+		SetRealData(data);
+	}
+
 	~DMImage() { RemoveDataListener(); RemoveROIListener(); }
 
 	void fromFront();

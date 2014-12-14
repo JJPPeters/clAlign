@@ -242,6 +242,8 @@ void Alignment::AlignImage(std::vector<float> shiftx, std::vector<float> shifty)
 	std::vector<float> summed(width*height);
 	Image.GetData(summed, 0, 0, height, width, 0, 1);
 
+	std::vector<DMImage> test_images;
+
 	for (int i = 1; i < depth; i++)
 	{
 		Image.GetData(data, 0, 0, height, width, i, i + 1);
@@ -273,11 +275,14 @@ void Alignment::AlignImage(std::vector<float> shiftx, std::vector<float> shifty)
 
 		std::vector<std::complex<float>> temp = ComplexBuffers[0]->GetLocal();
 
-		for (int j = 0; j < temp.size(); j++)
-			summed[j] += temp[j].real();
+		std::stringstream ss;
+		ss << "aligned " << i;
+		
+		test_images.push_back( DMImage(temp, ss.str().c_str(), 4, width, height) );
+
+		//for (int j = 0; j < temp.size(); j++)
+		//	summed[j] += temp[j].real();
 	}
 
-	DMImage summ_image;
-	summ_image.fromReal("summed image", 4, width, height);
-	summ_image.SetRealData(summed);
+	//DMImage summ_image(summed, "summed image", 4, width, height);
 }
