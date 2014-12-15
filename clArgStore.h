@@ -27,7 +27,6 @@ public:
 
 	shared_kernel kMultiCorrelation;
 	shared_kernel kFFTShift;
-	//shared_kernel kShiftImage;
 	shared_kernel kBilinearInterpolate;
 
 	bool haveDevice;
@@ -43,7 +42,6 @@ public:
 
 		kMultiCorrelation.reset(new clKernel(*Context, sMultiCorrelation, 6, "clMultiCorrelation"));
 		kFFTShift.reset(new clKernel(*Context, sfftShift, 4, "clfftShift"));
-		//kShiftImage.reset(new clKernel(*Context, sShiftImage, 5, "clShiftImage"));
 		kBilinearInterpolate.reset(new clKernel(*Context, sBilinearInterpolate, 14, "clBilinearInterpolate"));
 		
 		if (CheckStatus("ERROR: Unable to set up OpenCL with code "))

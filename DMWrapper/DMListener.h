@@ -26,7 +26,7 @@ public:
 	// so event handler can be closed
 	ulong_ptr_t EventHandler;
 
-	DMListener() {Active = FALSE;}
+	DMListener() : Active(false) {}
 	DMListener(const char_range &prefix);
 
 	~DMListener();

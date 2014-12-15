@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DMListener.h"
 
-DMListener::DMListener(const char_range &prefix) : fPrefix(prefix.begin(), prefix.end()), Active(TRUE) {}
+DMListener::DMListener(const char_range &prefix) : fPrefix(prefix.begin(), prefix.end()), Active(true) {}
 
 DMListener::~DMListener(){}
 
@@ -106,6 +106,8 @@ void DMListener::RemoveImageEventListener(DM::Image &image)
 
 void DMListener::AddDisplayEventListener(DM::ImageDisplay &disp)
 {
+	Active = false;
+
 	boost::shared_ptr<this_type> ptr = get_this_shared();
 
 	ptr->EventHandler = DM::ImageDisplayAddEventListener
@@ -127,6 +129,8 @@ void DMListener::AddDisplayEventListener(DM::ImageDisplay &disp)
 
 void DMListener::AddImageEventListener(DM::Image &img)
 {
+	Active = false;
+
 	boost::shared_ptr<this_type> ptr = get_this_shared();
 
 	ptr->EventHandler = DM::ImageAddEventListener

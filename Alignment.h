@@ -30,22 +30,30 @@ private:
 	// Fit parabola to find refined maxima
 	coord<float>FindVertexParabola(std::vector<float> data);
 
+	// Method that performs the shifts and summation of the image
 	void AlignImage(std::vector<float> shiftx, std::vector<float> shifty);
 
+	// Mutex shared with the dialog class
 	boost::shared_ptr<boost::mutex> _mtx;
+	// Mutex purely for the Alignment class
 	boost::mutex WorkLock;
 
+	// Image instance containing the data to be aligned
 	DMImage Image;
 
+	// Dimensions of the dataset
 	int width, height, depth;
 
+	// Class storing all the needed OpenCL arguments (context, kernels etc.)
 	boost::shared_ptr<clArgStore> clArguments;
+
+	// Vector of complex float buffers used for OpenCL
 	std::vector<boost::shared_ptr<clMemory<std::complex<float>, Auto>>> ComplexBuffers;
 
 public:
+	Alignment(){}
 	Alignment(boost::shared_ptr<clArgStore> clArgs, boost::shared_ptr<boost::mutex> dlg_mtx) : clArguments(clArgs), _mtx(dlg_mtx) {};
 	
 	void StartAlign();
 	void Process();
-	void update_clArgs(boost::shared_ptr<clArgStore> clArgs) { ComplexBuffers.clear(); clArguments = clArgs; }
 };

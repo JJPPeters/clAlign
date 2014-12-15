@@ -56,25 +56,6 @@ static char* sfftShift =
 "}	\n"
 ;
 
-//static char* sShiftImage =
-//"__kernel void clShiftImage(__global float2* fft, float shiftX, float shiftY, int width, int height) \n"
-//"{		\n"
-//"	//Get the work items ID \n"
-//"	int xid = get_global_id(0);	\n"
-//"	int yid = get_global_id(1); \n"
-//"	if(xid<width&&yid<height) \n"
-//"	{	\n"
-//"		int Index = xid + yid*width; \n"
-//"		int xF = xid - width / 2; \n"
-//"		int yF = height / 2 - yid - 1; \n"
-//"		float c = cos(2*M_PI * (shiftX*xF / width + shiftY*yF / height) ); \n"
-//"		float s = -sin(2*M_PI * (shiftX*xF / width + shiftY*yF / height) ); \n"
-//"		fft[Index].x = fft[Index].x * c - fft[Index].y * s; \n"
-//"		fft[Index].y = fft[Index].y * c + fft[Index].x * s; \n"
-//"	}	\n"
-//"}		\n"
-//;
-
 static char* sBilinearInterpolate =
 "__kernel void clBilinearInterpolate(__global const float2* Input, __global float2* Output, int fullwidth, int fullheight, int padLeft, int padRight, int padTop, int padBottom, float xShift, float yShift, int newwidth, int newheight, int iTop, int iLeft) \n"
 "{ \n"
