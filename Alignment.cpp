@@ -274,7 +274,7 @@ void Alignment::AlignImage(std::vector<float> shiftx, std::vector<float> shifty)
 		clArguments->kBilinearInterpolate->SetArg(5, 0);
 		clArguments->kBilinearInterpolate->SetArg(6, 0);
 		clArguments->kBilinearInterpolate->SetArg(7, 0);
-		clArguments->kBilinearInterpolate->SetArg(8, -cumulative_x[i - 1]);
+		clArguments->kBilinearInterpolate->SetArg(8, cumulative_x[i - 1]);
 		clArguments->kBilinearInterpolate->SetArg(9, -cumulative_y[i - 1]);
 		clArguments->kBilinearInterpolate->SetArg(10, width);
 		clArguments->kBilinearInterpolate->SetArg(11, height);
