@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "liveGPA", "TemplateMFCDialogPlugIn.vcxproj", "{46693E51-01D6-4CED-9C29-EE6AF34989CE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "clAlign", "TemplateMFCDialogPlugIn.vcxproj", "{46693E51-01D6-4CED-9C29-EE6AF34989CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

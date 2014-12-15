@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by liveGPA.rc
+// Used by clAlign.rc
 //
 #define IDD_DMDIALOG                    6000
 #define IDC_CARROT_BUTTON               6001

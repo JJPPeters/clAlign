@@ -98,8 +98,8 @@ void Alignment::OverDeterminedAlign()
 			coord<float> sub_pix = FindVertexParabola(area);
 
 
-			b_x[ind] = (pix.x + sub_pix.x) - width / 2;
-			b_y[ind] = height / 2 - (pix.y + sub_pix.y);
+			b_x[ind] = (static_cast<float>(pix.x) + sub_pix.x) - static_cast<float>(width) / 2;
+			b_y[ind] = static_cast<float>(height) / 2 - (static_cast<float>(pix.y) + sub_pix.y);
 
 			if (j == i + 1)
 			{
@@ -122,7 +122,7 @@ void Alignment::OverDeterminedAlign()
 	for (int i = 0; i < s_x.size(); i++)
 		DMresult << "(" << r_x[i] << ", " << r_y[i] << ") -> (" << s_x[i] << ", " << s_y[i] << ")" << DMendl;
 
-	AlignImage(r_x, r_y);
+	AlignImage(s_x, s_y);
 }
 
 std::vector<std::complex<float>> Alignment::CrossCorrelation(std::vector<std::complex<float>> image1, std::vector<std::complex<float>>image2)
@@ -249,40 +249,58 @@ void Alignment::AlignImage(std::vector<float> shiftx, std::vector<float> shifty)
 		Image.GetData(data, 0, 0, height, width, i, i + 1);
 		ComplexBuffers[0]->Write(data);
 
-		(*(clArguments->FFT))(ComplexBuffers[0], ComplexBuffers[0], Direction::Forwards);
+		/*(*(clArguments->FFT))(ComplexBuffers[0], ComplexBuffers[0], Direction::Forwards);
 
 		clArguments->kFFTShift->SetArg(0, ComplexBuffers[0], ArgumentType::Input);
 		clArguments->kFFTShift->SetArg(1, ComplexBuffers[1], ArgumentType::Output);
 		clArguments->kFFTShift->SetArg(2, width);
 		clArguments->kFFTShift->SetArg(3, height);
 
-		(*clArguments->kFFTShift)(GlobalWork);
+		(*clArguments->kFFTShift)(GlobalWork);*/
 
-		clArguments->kShiftImage->SetArg(0, ComplexBuffers[1], ArgumentType::InputOutput);
-		clArguments->kShiftImage->SetArg(1, cumulative_x[i - 1]);
-		clArguments->kShiftImage->SetArg(2, cumulative_y[i - 1]);
-		clArguments->kShiftImage->SetArg(3, width);
-		clArguments->kShiftImage->SetArg(4, height);
+		//clArguments->kShiftImage->SetArg(0, ComplexBuffers[1], ArgumentType::InputOutput);
+		//clArguments->kShiftImage->SetArg(1, cumulative_x[i - 1]);
+		//clArguments->kShiftImage->SetArg(2, cumulative_y[i - 1]);
+		//clArguments->kShiftImage->SetArg(3, width);
+		//clArguments->kShiftImage->SetArg(4, height);
 
-		(*clArguments->kShiftImage)(GlobalWork);
+		//(*clArguments->kShiftImage)(GlobalWork);
 
-		clArguments->kFFTShift->SetArg(0, ComplexBuffers[1], ArgumentType::Input);
+		clArguments->kBilinearInterpolate->SetArg(0, ComplexBuffers[0], ArgumentType::Input);
+		clArguments->kBilinearInterpolate->SetArg(1, ComplexBuffers[1], ArgumentType::Output);
+		clArguments->kBilinearInterpolate->SetArg(2, width);
+		clArguments->kBilinearInterpolate->SetArg(3, height);
+		clArguments->kBilinearInterpolate->SetArg(4, 0);
+		clArguments->kBilinearInterpolate->SetArg(5, 0);
+		clArguments->kBilinearInterpolate->SetArg(6, 0);
+		clArguments->kBilinearInterpolate->SetArg(7, 0);
+		clArguments->kBilinearInterpolate->SetArg(8, -cumulative_x[i - 1]);
+		clArguments->kBilinearInterpolate->SetArg(9, -cumulative_y[i - 1]);
+		clArguments->kBilinearInterpolate->SetArg(10, width);
+		clArguments->kBilinearInterpolate->SetArg(11, height);
+		clArguments->kBilinearInterpolate->SetArg(12, 0);
+		clArguments->kBilinearInterpolate->SetArg(13, 0);
+
+		(*clArguments->kBilinearInterpolate)(GlobalWork);
+
+
+		/*clArguments->kFFTShift->SetArg(0, ComplexBuffers[1], ArgumentType::Input);
 		clArguments->kFFTShift->SetArg(1, ComplexBuffers[0], ArgumentType::Output);
 
 		(*clArguments->kFFTShift)(GlobalWork);
 
-		(*(clArguments->FFT))(ComplexBuffers[0], ComplexBuffers[0], Direction::Inverse);
+		(*(clArguments->FFT))(ComplexBuffers[0], ComplexBuffers[0], Direction::Inverse);*/
 
-		std::vector<std::complex<float>> temp = ComplexBuffers[0]->GetLocal();
+		std::vector<std::complex<float>> temp = ComplexBuffers[1]->GetLocal();
 
-		std::stringstream ss;
-		ss << "aligned " << i;
-		
-		test_images.push_back( DMImage(temp, ss.str().c_str(), 4, width, height) );
+		//std::stringstream ss;
+		//ss << "aligned " << i;
+		//
+		//test_images.push_back( DMImage(temp, ss.str().c_str(), 4, width, height) );
 
-		//for (int j = 0; j < temp.size(); j++)
-		//	summed[j] += temp[j].real();
+		for (int j = 0; j < temp.size(); j++)
+			summed[j] += temp[j].real();
 	}
 
-	//DMImage summ_image(summed, "summed image", 4, width, height);
+	DMImage summ_image(summed, "summed image", 4, width, height);
 }
