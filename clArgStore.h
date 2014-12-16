@@ -28,6 +28,7 @@ public:
 	shared_kernel kMultiCorrelation;
 	shared_kernel kFFTShift;
 	shared_kernel kBilinearInterpolate;
+	shared_kernel kExponentialPass;
 
 	bool haveDevice;
 
@@ -41,6 +42,7 @@ public:
 		Context = boost::make_shared<clContext>(OpenCL::MakeContext(dev, Queue::InOrder));
 
 		kMultiCorrelation.reset(new clKernel(*Context, sMultiCorrelation, 6, "clMultiCorrelation"));
+		kExponentialPass.reset(new clKernel(*Context, sExponentialPass, 4, "clExponentialPass"));
 		kFFTShift.reset(new clKernel(*Context, sfftShift, 4, "clfftShift"));
 		kBilinearInterpolate.reset(new clKernel(*Context, sBilinearInterpolate, 14, "clBilinearInterpolate"));
 		

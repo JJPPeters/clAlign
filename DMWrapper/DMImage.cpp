@@ -16,24 +16,34 @@ void DMImage::fromFront()
 	CreateDataListener();
 }
 
-void DMImage::fromReal(std::string title, int bytes, int x, int y)
+void DMImage::fromReal(std::string title, int bytes, int x, int y, int z)
 {
-	Image = DM::RealImage(title, bytes, x, y);
+	Image = DM::RealImage(title, bytes, x, y, z);
 	Image.GetOrCreateImageDocument().Show();
 	Image.GetOrCreateImageDocument().Clean();
 	Display = Image.GetImageDisplay(0);
-	Image.GetDimensionSizes(width, height);
+	Image.GetDimensionSizes(width, height, depth);
 	CreateDataListener();
+}
+
+void DMImage::fromReal(std::string title, int bytes, int x, int y, int z, long t, long l, long b, long r)
+{
+	Image = DM::RealImage(title, bytes, x, y, z);
+	Image.GetOrCreateImageDocument().ShowAtRect(t, l, b, r);
+	Image.GetOrCreateImageDocument().Clean();
+	Display = Image.GetImageDisplay(0);
+	Image.GetDimensionSizes(width, height, depth);
+	CreateDataListener();
+}
+
+void DMImage::fromReal(std::string title, int bytes, int x, int y)
+{
+	fromReal(title, bytes, x, y, 1);
 }
 
 void DMImage::fromReal(std::string title, int bytes, int x, int y, long t, long l, long b, long r)
 {
-	Image = DM::RealImage(title, bytes, x, y);
-	Image.GetOrCreateImageDocument().ShowAtRect(t, l, b, r);
-	Image.GetOrCreateImageDocument().Clean();
-	Display = Image.GetImageDisplay(0);
-	Image.GetDimensionSizes(width, height);
-	CreateDataListener();
+	fromReal(title, bytes, x, y, 1, t, l, b, r);
 }
 
 void DMImage::Reshape(float Ratio, int x, int y)

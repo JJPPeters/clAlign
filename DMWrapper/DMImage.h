@@ -36,6 +36,34 @@ public:
 	DMImage() : ROIListener(new DMListener), DataListener(new DMListener) {}
 
 	template <typename T>
+	DMImage(std::vector<std::complex<T>> data, std::string title, int bytes, int x, int y, int z) : ROIListener(new DMListener), DataListener(new DMListener)
+	{
+		fromReal(title, bytes, x, y, z);
+		SetComplexData(data, SHOW_REAL);
+	}
+
+	template <typename T>
+	DMImage(std::vector<std::complex<T>> data, std::string title, int bytes, int x, int y, int z, long t, long l, long b, long r) : ROIListener(new DMListener), DataListener(new DMListener)
+	{
+		fromReal(title, bytes, x, y, z, t, l, b, r);
+		SetComplexData(data, SHOW_REAL);
+	}
+
+	template <typename T>
+	DMImage(std::vector<T> data, std::string title, int bytes, int x, int y, int z) : ROIListener(new DMListener), DataListener(new DMListener)
+	{
+		fromReal(title, bytes, x, y, z);
+		SetRealData(data);
+	}
+
+	template <typename T>
+	DMImage(std::vector<T> data, std::string title, int bytes, int x, int y, int z, long t, long l, long b, long r) : ROIListener(new DMListener), DataListener(new DMListener)
+	{
+		fromReal(title, bytes, x, y, z, t, l, b, r);
+		SetRealData(data);
+	}
+
+	template <typename T>
 	DMImage(std::vector<std::complex<T>> data, std::string title, int bytes, int x, int y) : ROIListener(new DMListener), DataListener(new DMListener)
 	{
 		fromReal(title, bytes, x, y);
@@ -63,9 +91,36 @@ public:
 		SetRealData(data);
 	}
 
+
+
+
+
+	DMImage(std::string title, int bytes, int x, int y, int z) : ROIListener(new DMListener), DataListener(new DMListener)
+	{
+		fromReal(title, bytes, x, y, z);
+	}
+
+	DMImage(std::string title, int bytes, int x, int y, int z, long t, long l, long b, long r) : ROIListener(new DMListener), DataListener(new DMListener)
+	{
+		fromReal(title, bytes, x, y, z, t, l, b, r);
+	}
+
+	DMImage(std::string title, int bytes, int x, int y) : ROIListener(new DMListener), DataListener(new DMListener)
+	{
+		fromReal(title, bytes, x, y);
+	}
+
+	DMImage(std::string title, int bytes, int x, int y, long t, long l, long b, long r) : ROIListener(new DMListener), DataListener(new DMListener)
+	{
+		fromReal(title, bytes, x, y, t, l, b, r);
+	}
+
 	~DMImage() { RemoveDataListener(); RemoveROIListener(); }
 
 	void fromFront();
+
+	void fromReal(std::string title, int bytes, int x, int y, int z);
+	void fromReal(std::string title, int bytes, int x, int y, int z, long t, long l, long b, long r);
 
 	void fromReal(std::string title, int bytes, int x, int y);
 	void fromReal(std::string title, int bytes, int x, int y, long t, long l, long b, long r);
@@ -102,8 +157,12 @@ public:
 	void GetData(std::vector<T> &destination, int t, int l, int b, int r, int front, int back);
 
 	template <typename T>
+	void SetRealData(std::vector<T> &source, int offset);
+	template <typename T>
 	void SetRealData(std::vector<T> &source);
 
+	template <typename T>
+	void SetComplexData(std::vector<T> &source, int offset, ShowComplex doComplex);
 	template <typename T>
 	void SetComplexData(std::vector<T> &source, ShowComplex doComplex);
 
@@ -113,10 +172,10 @@ private:
 	void GetLockerData(std::vector<T> &destination, int t, int l, int b, int r, int front, int back);
 
 	template <typename U, typename T>
-	void SetRealLockerData(std::vector<T> &source);
+	void SetRealLockerData(std::vector<T> &source, int offset);
 
 	template <typename U, typename T>
-	void SetComplexLockerData(std::vector<T> &source, ShowComplex doComplex);
+	void SetComplexLockerData(std::vector<T> &source, int offeset, ShowComplex doComplex);
 
 };
 

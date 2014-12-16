@@ -19,6 +19,47 @@ static char* sMultiCorrelation =
 "}		\n"
 ;
 
+
+// Exponential Low pass filter to be used on NON-FFT SHIFTED fourier transform
+static char* sExponentialPass =
+"__kernel void clExponentialPass(__global float2* fft, float Bfactor, int width, int height) \n"
+"{		\n"
+"	//Get the work items ID \n"
+"	int xid = get_global_id(0);	\n"
+"	int yid = get_global_id(1); \n"
+"	if(xid<width&&yid<height) \n"
+"	{	\n"
+"		int Index = xid + yid*width; \n"
+"		int Xmid = width/2; \n"
+"		int Ymid = height/2; \n"
+"       if (xid < Xmid && yid < Ymid) \n"
+"		{ \n"
+"		    float B = exp(-0.5 * Bfactor * ( xid*xid / (width * width) + yid*yid / (height * height) ) ); \n"
+"			fft[Index].x = fft[Index].x * B; \n"
+"			fft[Index].y = fft[Index].y * B; \n"
+"		} \n"
+"		else if( xid >= Xmid && yid < Ymid ) \n"
+"		{ \n"
+"		    float B = exp(-0.5 * Bfactor * ( (width - xid)*(width - xid) / (width * width) + yid*yid / (height * height) ) ); \n"
+"			fft[Index].x = fft[Index].x * B; \n"
+"			fft[Index].y = fft[Index].y * B; \n"
+"		} \n"
+"		else if( xid < Xmid && yid >= Ymid ) \n"
+"		{ \n"
+"		    float B = exp(-0.5 * Bfactor * ( xid*xid / (width * width) + (height - yid)*(height - yid) / (height * height) ) ); \n"
+"			fft[Index].x = fft[Index].x * B; \n"
+"			fft[Index].y = fft[Index].y * B; \n"
+"		} \n"
+"		else if( xid >= Xmid && yid >= Ymid ) \n"
+"		{ \n"
+"		    float B = exp(-0.5 * Bfactor * ( (width - xid)*(width - xid) / (width * width) + (height - yid)*(height - yid) / (height * height) ) ); \n"
+"			fft[Index].x = fft[Index].x * B; \n"
+"			fft[Index].y = fft[Index].y * B; \n"
+"		} \n"
+"	}	\n"
+"}	\n"
+;
+
 static char* sfftShift =
 "__kernel void clfftShift(__global const float2* Input, __global float2* Output, int width, int height) \n"
 "{		\n"

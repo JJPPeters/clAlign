@@ -68,8 +68,8 @@ void Alignment::OverDeterminedAlign()
 	int m = (n - 1) * n / 2; // check this hasn't got a stupid rounding thing going on
 	std::vector<float> b_x(m);
 	std::vector<float> b_y(m);
-	std::vector<float> r_x(m);
-	std::vector<float> r_y(m);
+	std::vector<float> r_x(n-1);
+	std::vector<float> r_y(n-1);
 	Matrix<float> A(m, n-1);
 	int ind = 0;
 
@@ -82,6 +82,9 @@ void Alignment::OverDeterminedAlign()
 			// do first cross-correlation and get pixel shift
 			Image.GetData(data1, 0, 0, height, width, i, i + 1);
 			Image.GetData(data2, 0, 0, height, width, j, j + 1);
+
+
+
 			std::vector<std::complex<float>> XCF = CrossCorrelation(data1, data2);
 			coord<int> pix = FindMaxima(XCF);
 
@@ -111,7 +114,6 @@ void Alignment::OverDeterminedAlign()
 			for (int k = i; k < j; k++)
 				A(ind, k) = 1.0;
 
-
 			ind++;
 		}
 	}
@@ -135,6 +137,19 @@ std::vector<std::complex<float>> Alignment::CrossCorrelation(std::vector<std::co
 	(*(clArguments->FFT))(ComplexBuffers[0], ComplexBuffers[0], Direction::Forwards);
 	(*(clArguments->FFT))(ComplexBuffers[1], ComplexBuffers[1], Direction::Forwards);
 
+	float B = 100.0;
+
+	clArguments->kExponentialPass->SetArg(0, ComplexBuffers[0], ArgumentType::InputOutput);
+	clArguments->kExponentialPass->SetArg(1, B);
+	clArguments->kExponentialPass->SetArg(2, width);
+	clArguments->kExponentialPass->SetArg(3, height);
+
+	(*clArguments->kExponentialPass)(GlobalWork);
+
+	clArguments->kExponentialPass->SetArg(0, ComplexBuffers[1], ArgumentType::InputOutput);
+
+	(*clArguments->kExponentialPass)(GlobalWork);
+
 	clArguments->kMultiCorrelation->SetArg(0, ComplexBuffers[0], ArgumentType::Input);
 	clArguments->kMultiCorrelation->SetArg(1, ComplexBuffers[1], ArgumentType::Input);
 	clArguments->kMultiCorrelation->SetArg(2, ComplexBuffers[2], ArgumentType::Output);
@@ -153,8 +168,6 @@ std::vector<std::complex<float>> Alignment::CrossCorrelation(std::vector<std::co
 	clArguments->kFFTShift->SetArg(3, height);
 
 	(*clArguments->kFFTShift)(GlobalWork);
-
-	clArguments->Context->WaitForQueueFinish();
 
 	return ComplexBuffers[1]->GetLocal();
 }
@@ -179,7 +192,7 @@ coord<int> Alignment::FindMaxima(std::vector<std::complex<float>> data)
 	int y = maxPosition / width; // should be rounded down
 	int x = maxPosition % (y * width);
 
-	return coord<int>(y, x);
+	return coord<int>(x, y);
 }
 
 coord<float> Alignment::FindVertexParabola(std::vector<float> data)
@@ -196,9 +209,16 @@ coord<float> Alignment::FindVertexParabola(std::vector<float> data)
 
 
 	float denom = (x1 - x2) * (x1 - x3) * (x2 - x3);
+
+	if (denom == 0)
+		return coord<float>(0.0, 0.0);
+
 	float A = (x3 * (y2 - y1) + x2 * (y1 - y3) + x1 * (y3 - y2)) / denom;
 	float B = (x3*x3 * (y1 - y2) + x2*x2 * (y3 - y1) + x1*x1 * (y2 - y3)) / denom;
 	float C = (x2 * x3 * (x2 - x3) * y1 + x3 * x1 * (x3 - x1) * y2 + x1 * x2 * (x1 - x2) * y3) / denom;
+
+	if (A == 0)
+		return coord<float>(0.0, 0.0);
 
 	float xoffset = std::max(std::min(-B / (2 * A), 1.0f), -1.0f); // Bad fits cause subshifts that are way bigger than +-1.0
 
@@ -206,9 +226,16 @@ coord<float> Alignment::FindVertexParabola(std::vector<float> data)
 	y3 = data[7];
 
 	denom = (x1 - x2) * (x1 - x3) * (x2 - x3);
+
+	if (denom == 0)
+		return coord<float>(0.0, 0.0);
+
 	A = (x3 * (y2 - y1) + x2 * (y1 - y3) + x1 * (y3 - y2)) / denom;
 	B = (x3*x3 * (y1 - y2) + x2*x2 * (y3 - y1) + x1*x1 * (y2 - y3)) / denom;
 	C = (x2 * x3 * (x2 - x3) * y1 + x3 * x1 * (x3 - x1) * y2 + x1 * x2 * (x1 - x2) * y3) / denom;
+
+	if (A == 0)
+		return coord<float>(0.0, 0.0);
 
 	float yoffset = std::max(std::min(-B / (2 * A), 1.0f), -1.0f);
 
@@ -217,54 +244,105 @@ coord<float> Alignment::FindVertexParabola(std::vector<float> data)
 
 void Alignment::AlignImage(std::vector<float> shiftx, std::vector<float> shifty)
 {
-	std::vector<float> cumulative_x(shiftx.size());
-	std::vector<float> cumulative_y(shifty.size());
+	// First calculate the cumulative shifts
 
-	cumulative_x[0] = shiftx[0];
-	cumulative_y[0] = shifty[0];
+	// Vectors to contain cumulative shifts
+	std::vector<float> cumulative_x(shiftx.size()+1);
+	std::vector<float> cumulative_y(shifty.size()+1);
 
-	for (int i = 1; i < shiftx.size(); i++)
+	// Stores maximum shifts so we can crop the images appropriately
+	float max_x = 0;
+	float max_y = 0;
+	float min_x = 0;
+	float min_y = 0;
+
+	// First shift can be set manually
+	cumulative_x[0] = 0;
+	cumulative_y[0] = 0;
+
+	// Loop through and add shifts
+	for (int i = 1; i < shiftx.size()+1; i++)
 	{
-		cumulative_x[i] = cumulative_x[i - 1] + shiftx[i];
-		cumulative_y[i] = cumulative_y[i - 1] + shifty[i];
+		cumulative_x[i] = cumulative_x[i-1] + shiftx[i-1];
+		cumulative_y[i] = cumulative_y[i-1] + shifty[i-1];
+
+		// Test for new min/max
+		if (cumulative_x[i] > max_x)
+			max_x = cumulative_x[i];
+		if (cumulative_y[i] > max_y)
+			max_y = cumulative_y[i];
+		if (cumulative_x[i] < min_x)
+			min_x = cumulative_x[i];
+		if (cumulative_y[i] < min_y)
+			min_y = cumulative_y[i];
 	}
+
+	// Convert max/min shifts to integers
+	int iMax_x = static_cast<int>(floor(max_x));
+	int iMax_y = static_cast<int>(floor(max_y));
+	int iMin_x = static_cast<int>(floor(min_x));
+	int iMin_y = static_cast<int>(floor(min_y));
+
+	// Calculate new image sizes from drifts
+	int newWidth = width - (iMax_x - iMin_x);
+	int newHeight = height - (iMax_y - iMin_y);
+
+	OutputBuffer = (*(clArguments->Context)).CreateBuffer<std::complex<float>, Auto>(newWidth * newHeight);
 
 	clWorkGroup GlobalWork(width, height, 1);
 	std::vector<std::complex<float>> data(width*height);
 
-	std::vector<float> summed(width*height);
-	Image.GetData(summed, 0, 0, height, width, 0, 1);
+	std::vector<float> summed(newWidth*newHeight);
 
-	std::vector<DMImage> test_images;
+	for (int i = 0; i < newWidth*newHeight; i++)
+		summed[i] = 0.0;
 
-	for (int i = 1; i < depth; i++)
+	DMImage aligned_image("Aligned Image", 4, newWidth, newHeight, depth);
+
+	for (int i = 0; i < depth; i++)
 	{
 		Image.GetData(data, 0, 0, height, width, i, i + 1);
 		ComplexBuffers[0]->Write(data);
 
-		// Currently shifts image with no padding
+		// Shift image with no padding
 		clArguments->kBilinearInterpolate->SetArg(0, ComplexBuffers[0], ArgumentType::Input);
-		clArguments->kBilinearInterpolate->SetArg(1, ComplexBuffers[1], ArgumentType::Output);
+		clArguments->kBilinearInterpolate->SetArg(1, OutputBuffer, ArgumentType::Output);
 		clArguments->kBilinearInterpolate->SetArg(2, width);
 		clArguments->kBilinearInterpolate->SetArg(3, height);
 		clArguments->kBilinearInterpolate->SetArg(4, 0);
 		clArguments->kBilinearInterpolate->SetArg(5, 0);
 		clArguments->kBilinearInterpolate->SetArg(6, 0);
 		clArguments->kBilinearInterpolate->SetArg(7, 0);
-		clArguments->kBilinearInterpolate->SetArg(8, cumulative_x[i - 1]);
-		clArguments->kBilinearInterpolate->SetArg(9, -cumulative_y[i - 1]);
-		clArguments->kBilinearInterpolate->SetArg(10, width);
-		clArguments->kBilinearInterpolate->SetArg(11, height);
-		clArguments->kBilinearInterpolate->SetArg(12, 0);
-		clArguments->kBilinearInterpolate->SetArg(13, 0);
+		clArguments->kBilinearInterpolate->SetArg(8, cumulative_x[i]);
+		clArguments->kBilinearInterpolate->SetArg(9, -cumulative_y[i]);
+		clArguments->kBilinearInterpolate->SetArg(10, newWidth);
+		clArguments->kBilinearInterpolate->SetArg(11, newHeight);
+
+		//int temp1 = iMax_y - static_cast<int>(floor(cumulative_y[i]));
+		//int temp2 = iMax_x - static_cast<int>(floor(cumulative_x[i]));
+		int temp1 = 0;
+		int temp2 = 0;
+
+		clArguments->kBilinearInterpolate->SetArg(12, temp1 );
+		clArguments->kBilinearInterpolate->SetArg(13, temp2 );
 
 		(*clArguments->kBilinearInterpolate)(GlobalWork);
 
-		std::vector<std::complex<float>> temp = ComplexBuffers[1]->GetLocal();
+		std::vector<std::complex<float>> temp = OutputBuffer->GetLocal();
 
-		for (int j = 0; j < temp.size(); j++)
-			summed[j] = (summed[j] + temp[j].real()) / 2;
+		try
+		{
+			aligned_image.SetComplexData(temp, newWidth*newHeight*i, SHOW_REAL);
+		}
+		catch (const std::invalid_argument& e)
+		{
+			DMresult << "ERROR: " << e.what() << DMendl; break;
+		}
+
+		for (int j = 0; j < summed.size(); j++)
+			summed[j] = summed[j] + temp[j].real();
+
 	}
 
-	DMImage summ_image(summed, "summed image", 4, width, height);
+	DMImage summ_image(summed, "Summed image", 4, newWidth, newHeight);
 }

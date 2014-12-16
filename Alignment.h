@@ -47,8 +47,11 @@ private:
 	// Class storing all the needed OpenCL arguments (context, kernels etc.)
 	boost::shared_ptr<clArgStore> clArguments;
 
-	// Vector of complex float buffers used for OpenCL
+	// Vector of complex float buffers used for OpenCL. Same size as input image.
 	std::vector<boost::shared_ptr<clMemory<std::complex<float>, Auto>>> ComplexBuffers;
+
+	// Complex flaot buffer used to get cropped output image. Different dimensions to image.
+	boost::shared_ptr<clMemory<std::complex<float>, Auto>> OutputBuffer;
 
 public:
 	Alignment(){}

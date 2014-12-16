@@ -1,7 +1,7 @@
 template <typename T>
 void DMImage::GetData(std::vector<T> &destination, int t, int l, int b, int r, int front, int back)
 {
-	if (destination.size() != (r - l) * (b - t))
+	if (destination.size() != (r - l) * (b - t) * (back - front))
 		throw std::invalid_argument("Array sizes must match");
 
 	if (Image.IsDataTypeFloat())
@@ -17,19 +17,44 @@ void DMImage::GetData(std::vector<T> &destination, int t, int l, int b, int r, i
 }
 
 template <typename T>
-void DMImage::SetRealData(std::vector<T> &source)
+void DMImage::SetRealData(std::vector<T> &source, int offset)
 {
-	if (source.size() > width * height)
+	if (source.size() > (width * height * depth) - offset)
 		throw std::invalid_argument("Array sizes must match");
 
 	if (Image.IsDataTypeFloat())
-		SetRealLockerData<float, T>(source);
+		SetRealLockerData<float, T>(source, offset);
 	else if (Image.IsDataTypeInteger())
-		SetRealLockerData<int, T>(source);
+		SetRealLockerData<int, T>(source, offset);
 	else if (Image.IsDataTypeSignedInteger())
-		SetRealLockerData<int, T>(source);
+		SetRealLockerData<int, T>(source, offset);
 	else if (Image.IsDataTypeUnsignedInteger())
-		SetRealLockerData<uint, T>(source);
+		SetRealLockerData<uint, T>(source, offset);
+	else
+		throw std::invalid_argument("Data type not supported");
+}
+
+template <typename T>
+void DMImage::SetRealData(std::vector<T> &source)
+{
+	SetRealData(source, 0);
+}
+
+template <typename T>
+void DMImage::SetComplexData(std::vector<T> &source, int offset, ShowComplex doComplex)
+{
+	if (source.size() > (width * height * depth) - offset){
+		throw std::invalid_argument("Array sizes must match");
+	}
+
+	if (Image.IsDataTypeFloat())
+		SetComplexLockerData<float, T>(source, offset, doComplex);
+	else if (Image.IsDataTypeInteger())
+		SetComplexLockerData<int, T>(source, offset, doComplex);
+	else if (Image.IsDataTypeSignedInteger())
+		SetComplexLockerData<int, T>(source, offset, doComplex);
+	else if (Image.IsDataTypeUnsignedInteger())
+		SetComplexLockerData<uint, T>(source, offset, doComplex);
 	else
 		throw std::invalid_argument("Data type not supported");
 }
@@ -37,21 +62,7 @@ void DMImage::SetRealData(std::vector<T> &source)
 template <typename T>
 void DMImage::SetComplexData(std::vector<T> &source, ShowComplex doComplex)
 {
-
-	if (source.size() > width * height){
-		throw std::invalid_argument("Array sizes must match");
-	}
-
-	if (Image.IsDataTypeFloat())
-		SetComplexLockerData<float, T>(source, doComplex);
-	else if (Image.IsDataTypeInteger())
-		SetComplexLockerData<int, T>(source, doComplex);
-	else if (Image.IsDataTypeSignedInteger())
-		SetComplexLockerData<int, T>(source, doComplex);
-	else if (Image.IsDataTypeUnsignedInteger())
-		SetComplexLockerData<uint, T>(source, doComplex);
-	else
-		throw std::invalid_argument("Data type not supported");
+	SetComplexData(source, 0, doComplex);
 }
 
 template <typename U, typename T>
@@ -67,30 +78,30 @@ void DMImage::GetLockerData(std::vector<T> &destination, int t, int l, int b, in
 }
 
 template <typename U, typename T>
-void DMImage::SetRealLockerData(std::vector<T> &source)
+void DMImage::SetRealLockerData(std::vector<T> &source, int offset)
 {
 
 	Gatan::PlugIn::ImageDataLocker iLocker = Gatan::PlugIn::ImageDataLocker(Image);
 	U* idata = static_cast<U*>(iLocker.get());
 	for (int j = 0; j < (source.size()); j++)
-		idata[j] = static_cast<U>(source[j]);
+		idata[j+offset] = static_cast<U>(source[j]);
 	iLocker.~ImageDataLocker();
 	Image.DataChanged();
 }
 
 template <typename U, typename T>
-void DMImage::SetComplexLockerData(std::vector<T> &source, ShowComplex doComplex)
+void DMImage::SetComplexLockerData(std::vector<T> &source, int offset, ShowComplex doComplex)
 {
 	Gatan::PlugIn::ImageDataLocker iLocker = Gatan::PlugIn::ImageDataLocker(Image);
 	U* idata = static_cast<U*>(iLocker.get());
 	for (int j = 0; j < (source.size()); j++)
 	{
 		if (doComplex == SHOW_REAL)
-			idata[j] = static_cast<U>(source[j].real());
+			idata[j+offset] = static_cast<U>(source[j].real());
 		else if (doComplex == SHOW_IMAG)
-			idata[j] = static_cast<U>(source[j].imag());
+			idata[j+offset] = static_cast<U>(source[j].imag());
 		else if (doComplex == SHOW_ABS)
-			idata[j] = static_cast<U>(std::abs(source[j]));
+			idata[j+offset] = static_cast<U>(std::abs(source[j]));
 	}
 	iLocker.~ImageDataLocker();
 	Image.DataChanged();
