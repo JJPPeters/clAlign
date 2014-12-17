@@ -1,4 +1,5 @@
 #pragma once
+#include<complex>
 
 // Very simple implementation of a 2D matrix using std::vector as the main container.
 template <typename T>
@@ -9,7 +10,7 @@ public:
 	Matrix();
 
 	// Creates Matrix as copy of another matrix
-	// Matrix(const Matrix<T> &RHS);
+	Matrix(const Matrix<T> &RHS);
 
 	// Creates Matrix of size (rows*cols) filled with zeros
 	Matrix(int rows, int cols);
@@ -31,6 +32,16 @@ public:
 
 	// Access component (row,col)
 	const T& operator()(int row, int col) const;
+
+	std::vector<T>& operator[](int row);
+
+	inline const std::vector<T>& operator[](int row) const;
+
+	// Gets the row of the matrix
+	std::vector<T> getRow(int row) const;
+
+	// Gets the row of the matrix
+	void setRow(const std::vector<T> &rowData, int row);
 
 	// Returns number of elements
 	int size() const;
@@ -57,6 +68,9 @@ private:
 
 template<typename T>
 Matrix<T>::Matrix() : n(0), nRows(0), nCols(0) {}
+
+template<typename T>
+Matrix<T>::Matrix(const Matrix<T> &RHS) : n(RHS.n), nRows(RHS.nRows), nCols(RHS.nCols), Data(RHS.Data) {}
 
 template<typename T>
 Matrix<T>::Matrix(int rows, int cols) : n(rows * cols), nRows(rows), nCols(cols)
@@ -103,6 +117,46 @@ inline T& Matrix<T>::operator()(int row, int col)
 	assert(row < nRows);
 	assert(col < nCols);
 	return Data[row * nCols + col];
+}
+
+template<typename T>
+inline std::vector<T>& Matrix<T>::operator[](int row)
+{
+	std::vector<T>::const_iterator first = Data.begin() + row * nCols;
+	std::vector<T>::const_iterator last = Data.begin() + (row + 1) * nCols;
+	return std::vector<T>(first, last);
+}
+
+template<typename T>
+inline const std::vector<T>& Matrix<T>::operator[](int row) const
+{
+	std::vector<T>::const_iterator first = Data.begin() + row * nCols;
+	std::vector<T>::const_iterator last = Data.begin() + (row + 1) * nCols;
+	return std::vector<T>(first, last);
+}
+
+template <typename T>
+std::vector<T> Matrix<T>::getRow(int row) const
+{
+	assert(row >= 0);
+	assert(row < nRows);
+
+	std::vector<T> tmp(nCols);
+	for (int i = 0; i<nCols; ++i)
+		tmp[i] = Data[row * nCols + i];
+
+	return tmp;
+}
+
+template <typename T>
+void Matrix<T>::setRow(const std::vector<T> &rowData, int row)
+{
+	assert(row >= 0);
+	assert(row < nRows);
+	assert(rowData.size() == nCols);
+
+	for (int i = 0; i<nCols; ++i)
+		Data[row * nCols + i] = rowData[i];
 }
 
 template<typename T>

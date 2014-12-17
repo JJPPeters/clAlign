@@ -1,4 +1,5 @@
 #include "Matrix.h"
+#include<complex>
 
 template <typename T>
 class LowerUpper
@@ -79,7 +80,7 @@ void LowerUpper<T>::decompose(const Matrix<T> &A)
 		piv[i] = i;
 
 	pivsign = 1;
-	T *LUrowi = 0;
+	std::vector<T> LUrowi;
 	std::vector<T> LUcolj(m);
 
 	// outer loop
@@ -92,7 +93,7 @@ void LowerUpper<T>::decompose(const Matrix<T> &A)
 		// Apply previous transformations.
 		for (int i = 0; i<m; ++i)
 		{
-			LUrowi = &LU(i, 0);
+			LUrowi = LU[i];
 
 			// Most of the time is spent in the following dot product.
 			int kmax = (i < j) ? i : j;

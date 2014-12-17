@@ -780,6 +780,7 @@
     <ClInclude Include="LinearAlgebra\LowerUpper.h" />
     <ClInclude Include="LinearAlgebra\Matrix.h" />
     <ClInclude Include="LinearAlgebra\MatrixOperations.h" />
+    <ClInclude Include="LinearAlgebra\SVD.h" />
     <ClInclude Include="NumEdit.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />

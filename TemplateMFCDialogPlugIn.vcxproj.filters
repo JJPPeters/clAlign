@@ -206,6 +206,9 @@
     <ClInclude Include="LinearAlgebra\LowerUpper.h">
       <Filter>Header Files\LinearAlgebra</Filter>
     </ClInclude>
+    <ClInclude Include="LinearAlgebra\SVD.h">
+      <Filter>Header Files\LinearAlgebra</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />

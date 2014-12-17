@@ -32,7 +32,7 @@ Matrix<T> luSolver(const Matrix<T> &A, const Matrix<T> &B)
 {
 	assert(A.rows() == B.rows());
 
-	LUD<Type> lu;
-	lu.dec(A);
+	LowerUpper<T> lu;
+	lu.decompose(A);
 	return lu.solve(B);
 }

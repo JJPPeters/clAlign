@@ -12,11 +12,16 @@
 #include "boost/thread/mutex.hpp"
 #include "boost/thread.hpp"
 
+#include"LinearAlgebra/Matrix.h"
+
 class Alignment : public WorkerClass, public DMListenable
 {
 private:
 	// Main body of the alignment code. Runs in new thread to avoid locking anything else.
 	void DoWork();
+
+	//
+	void RemoveBlankFrames();
 
 	// Performs an alignment by solving an overdetermined set of equations relating all shifts
 	void OverDeterminedAlign();
@@ -24,11 +29,17 @@ private:
 	// Performs Cross correlation and phase correlation using OpenCL
 	std::vector<std::complex<float>> CrossCorrelation(std::vector<std::complex<float>> image1, std::vector<std::complex<float>>image2);
 
-	// Finds the pixel maxima of a vector
-	coord<int> FindMaxima(std::vector<std::complex<float>> data);
+	// Finds the maxima of a vector and returns the x,y, position
+	coord<int> FindMaxima(std::vector<std::complex<float>> &data);
+
+	// Finds the minimum of a vector and returns the index
+	int FindMinimaIndex(std::vector<float> &data);
 
 	// Fit parabola to find refined maxima
 	coord<float>FindVertexParabola(std::vector<float> data);
+
+	// Finds values with large error and removes them from calculation
+	std::vector<int> OverDeterminedThreshold(Matrix<std::complex<float>> &A, std::vector<std::complex<float>> &b, std::vector<float> &error, float thresh);
 
 	// Method that performs the shifts and summation of the image
 	void AlignImage(std::vector<float> shiftx, std::vector<float> shifty);
@@ -38,8 +49,11 @@ private:
 	// Mutex purely for the Alignment class
 	boost::mutex WorkLock;
 
-	// Image instance containing the data to be aligned
+	// Image used as input
 	DMImage Image;
+
+	// Image used to store input with blank frames removed
+	DMImage BlankCorrected;
 
 	// Dimensions of the dataset
 	int width, height, depth;

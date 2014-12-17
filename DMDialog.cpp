@@ -60,7 +60,7 @@ void CDMDialog::OnCbnSelchangeCmbDevices()
 {
 	boost::lock_guard<boost::mutex> lock(*_mtx);
 
-	DMresult << "Switching OpenCL device, this can take some time. Please wait..." << DMendl;
+	DMresult << DMendl << "Switching OpenCL device, this can take some time. Please wait..." << DMendl;
 
 	int sel = combo_CLdev.GetCurSel();
 	int item = combo_CLdev.GetItemData(sel);

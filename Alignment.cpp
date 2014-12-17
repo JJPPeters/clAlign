@@ -2,9 +2,11 @@
 
 #include "Alignment.h"
 #include<time.h>
+#include <numeric> // for accumulate function
+#include <complex>
 
-#include"LinearAlgebra/Matrix.h"
 #include"LinearAlgebra/Decomposition.h"
+#include"LinearAlgebra/SVD.h"
 
 
 void Alignment::Process()
@@ -24,8 +26,6 @@ void Alignment::StartAlign()
 		{ Image.fromFront(); }
 	catch (const std::invalid_argument& e)
 		{ DMresult << "ERROR: " << e.what() << DMendl; return; }
-
-	//Later need to add ability to select ROI (needs to be power of 2 etc)
 
 	width = Image.getWidth();
 	height = Image.getHeight();
@@ -56,7 +56,67 @@ void Alignment::DoWork()
 		return;
 	}
 
+	// Should probably find a way of skipping this step if not needed?
+	RemoveBlankFrames();
+
 	OverDeterminedAlign();
+}
+
+void Alignment::RemoveBlankFrames()
+{
+	std::vector<float> data(width*height);
+	std::vector<int> validZ(depth);
+	int newDepth = 0;
+
+	for (int i = 0; i < depth; i++)
+	{
+		Image.GetData(data, 0, 0, height, width, i, i + 1);
+
+		if (data[0] != 0 || data[width * height - 1] != 0) // Quick test that should cover most non-zero cases
+		{
+			validZ[i] = 1;
+			newDepth++;
+		}
+		else
+		{
+			// check rest of elements are also 0
+			// might be somewhat intensive work?
+			float sum_of_elems = std::accumulate(data.begin(), data.end(), 0);
+
+			if (sum_of_elems == 0)
+				validZ[i] = 0;
+			else
+			{
+				validZ[i] = 1;
+				newDepth++;
+			}
+		}
+	}
+
+	// Create the new image now.
+	BlankCorrected = DMImage("Blank frame corrected", 4, width, height, newDepth);
+
+	int ind = 0;
+
+	for (int i = 0; i < depth; i++)
+	{
+		if (validZ[i] == 1)
+		{
+			// get data then set it.
+			try
+				{ Image.GetData(data, 0, 0, height, width, i, i + 1); }
+			catch (const std::invalid_argument& e)
+				{ DMresult << "ERROR: " << e.what() << DMendl; break; }
+			try
+				{ BlankCorrected.SetRealData(data, width*height*ind); }
+			catch (const std::invalid_argument& e)
+				{ DMresult << "ERROR: " << e.what() << DMendl; break; }
+			ind++;
+		}
+	}
+
+	// update depth
+	depth = newDepth;
 }
 
 void Alignment::OverDeterminedAlign()
@@ -66,11 +126,9 @@ void Alignment::OverDeterminedAlign()
 
 	int n = depth;
 	int m = (n - 1) * n / 2; // check this hasn't got a stupid rounding thing going on
-	std::vector<float> b_x(m);
-	std::vector<float> b_y(m);
-	std::vector<float> r_x(n-1);
-	std::vector<float> r_y(n-1);
-	Matrix<float> A(m, n-1);
+	std::vector<std::complex<float>> b(m);
+	std::vector<std::complex<float>> r(n-1);
+	Matrix<std::complex<float>> A(m, n - 1);
 	int ind = 0;
 
 	clock_t startTime = clock();
@@ -80,10 +138,8 @@ void Alignment::OverDeterminedAlign()
 		for (int j = i + 1; j < n; j++)
 		{
 			// do first cross-correlation and get pixel shift
-			Image.GetData(data1, 0, 0, height, width, i, i + 1);
-			Image.GetData(data2, 0, 0, height, width, j, j + 1);
-
-
+			BlankCorrected.GetData(data1, 0, 0, height, width, i, i + 1);
+			BlankCorrected.GetData(data2, 0, 0, height, width, j, j + 1);
 
 			std::vector<std::complex<float>> XCF = CrossCorrelation(data1, data2);
 			coord<int> pix = FindMaxima(XCF);
@@ -100,15 +156,14 @@ void Alignment::OverDeterminedAlign()
 				}
 			coord<float> sub_pix = FindVertexParabola(area);
 
+			// reset origin and apply refinement
+			float t1 = (static_cast<float>(pix.x) + sub_pix.x) - static_cast<float>(width) / 2;
+			float t2 = static_cast<float>(height) / 2 - (static_cast<float>(pix.y) + sub_pix.y);
 
-			b_x[ind] = (static_cast<float>(pix.x) + sub_pix.x) - static_cast<float>(width) / 2;
-			b_y[ind] = static_cast<float>(height) / 2 - (static_cast<float>(pix.y) + sub_pix.y);
+			b[ind] = std::complex<float>(t1, t2);
 
 			if (j == i + 1)
-			{
-				r_x[i] = b_x[ind];
-				r_y[i] = b_y[ind];
-			}
+				r[i] = b[ind];
 
 			// Create the coefficient matrix here
 			for (int k = i; k < j; k++)
@@ -118,13 +173,39 @@ void Alignment::OverDeterminedAlign()
 		}
 	}
 
-	std::vector<float> s_x = lsSolver(A, b_x);
-	std::vector<float> s_y = lsSolver(A, b_y);
+	std::vector<std::complex<float>> s = lsSolver(A, b);
 
-	for (int i = 0; i < s_x.size(); i++)
-		DMresult << "(" << r_x[i] << ", " << r_y[i] << ") -> (" << s_x[i] << ", " << s_y[i] << ")" << DMendl;
+	std::vector<float> s_x(m);
+	std::vector<float> s_y(m);
 
-	AlignImage(r_x, r_y);
+	for (int i = 0; i < s.size(); i++)
+	{
+		s_x[i] = s[i].real();
+		s_y[i] = s[i].imag();
+	}
+
+	std::vector<std::complex<float>> temp = A*s;
+
+	std::vector<float> error(temp.size());
+
+	for (int i = 0; i < temp.size(); ++i)
+		error[i] = std::abs(temp[i] - b[i]);
+
+	std::vector<int> goodlist = OverDeterminedThreshold(A, b, error, 5);
+
+	std::vector<float> s2_x(m);
+	std::vector<float> s2_y(m);
+
+	s = lsSolver(A, b);
+
+	for (int i = 0; i < s.size(); i++)
+	{
+		DMresult << "(" << r[i].real() << ", " << r[i].imag() << ") -> (" << s_x[i] << ", " << s_y[i] << ") -> (" << s[i].real() << ", " << s[i].imag() << ")" << DMendl;
+		s2_x[i] = s[i].real();
+		s2_y[i] = s[i].imag();
+	}
+
+	AlignImage(s2_x, s2_y);
 }
 
 std::vector<std::complex<float>> Alignment::CrossCorrelation(std::vector<std::complex<float>> image1, std::vector<std::complex<float>>image2)
@@ -137,6 +218,7 @@ std::vector<std::complex<float>> Alignment::CrossCorrelation(std::vector<std::co
 	(*(clArguments->FFT))(ComplexBuffers[0], ComplexBuffers[0], Direction::Forwards);
 	(*(clArguments->FFT))(ComplexBuffers[1], ComplexBuffers[1], Direction::Forwards);
 
+	// Needs to be user set at some point
 	float B = 100.0;
 
 	clArguments->kExponentialPass->SetArg(0, ComplexBuffers[0], ArgumentType::InputOutput);
@@ -172,9 +254,11 @@ std::vector<std::complex<float>> Alignment::CrossCorrelation(std::vector<std::co
 	return ComplexBuffers[1]->GetLocal();
 }
 
-coord<int> Alignment::FindMaxima(std::vector<std::complex<float>> data)
+coord<int> Alignment::FindMaxima(std::vector<std::complex<float>> &data)
 {
-	float maxheight = 0.0f;
+	assert(data.size() = width * height);
+
+	float maxValue = 0.0f;
 	int maxPosition = 0;
 
 	for (int j = 0; j< width*height; j++)
@@ -182,9 +266,9 @@ coord<int> Alignment::FindMaxima(std::vector<std::complex<float>> data)
 		// Use real part of ifft to get peak heights, not absolute....
 		float val = data[j].real();
 
-		if (val > maxheight)
+		if (val > maxValue)
 		{
-			maxheight = val;
+			maxValue = val;
 			maxPosition = j;
 		}
 	}
@@ -193,6 +277,22 @@ coord<int> Alignment::FindMaxima(std::vector<std::complex<float>> data)
 	int x = maxPosition % (y * width);
 
 	return coord<int>(x, y);
+}
+
+int Alignment::FindMinimaIndex(std::vector<float> &data)
+{
+	int minPosition = 0;
+	float minValue = data[0];
+	for (int i = 1; i<data.size(); i++)
+	{
+		if (data[i]<minValue)
+		{
+			minValue = data[i];
+			minPosition = i;
+		}
+	}
+
+	return minPosition;
 }
 
 coord<float> Alignment::FindVertexParabola(std::vector<float> data)
@@ -240,6 +340,56 @@ coord<float> Alignment::FindVertexParabola(std::vector<float> data)
 	float yoffset = std::max(std::min(-B / (2 * A), 1.0f), -1.0f);
 
 	return coord<float>(xoffset, yoffset);
+}
+
+std::vector<int> Alignment::OverDeterminedThreshold(Matrix<std::complex<float>> &A, std::vector<std::complex<float>> &b, std::vector<float> &error, float thresh)
+{
+	std::vector<int> goodlist, bk;
+	Matrix<std::complex<float>> tA = A;
+	std::vector<std::complex<float>> tb = b;
+	std::vector<float> terror = error;
+	SVD<std::complex<float>> svd;
+
+	Matrix<float> temp(10,10);
+
+	int rank = 0;
+	int i, pos, ii;
+	for (i = 0; i<terror.size(); i++)
+	{
+		pos = FindMinimaIndex(terror);
+		goodlist.push_back(pos);
+		terror[pos] = 1e20;
+	}
+	bk = goodlist;
+
+	for (i = goodlist.size() - 1; i >= A.cols(); i--)
+	{
+		if (error[goodlist[i]]<thresh)
+			break;
+	}
+	ii = i;
+
+	do
+	{
+		goodlist = bk;
+		goodlist.erase(goodlist.begin() + ii + 1, goodlist.end());
+		sort(goodlist.begin(), goodlist.end());
+
+		A = Matrix<std::complex<float> >(goodlist.size(), A.cols(), 0.0);
+		b = std::vector<std::complex<float> >(goodlist.size(), 0.0);
+		for (i = 0; i<goodlist.size(); i++)
+		{
+			A.setRow(tA.getRow(goodlist[i]), i);
+			b[i] = tb[goodlist[i]];
+		}
+
+		svd.decompose(A);
+		rank = svd.rank();
+
+		ii++;
+	} while (rank<A.cols() && ii<bk.size());
+
+	return goodlist;
 }
 
 void Alignment::AlignImage(std::vector<float> shiftx, std::vector<float> shifty)
@@ -301,7 +451,7 @@ void Alignment::AlignImage(std::vector<float> shiftx, std::vector<float> shifty)
 
 	for (int i = 0; i < depth; i++)
 	{
-		Image.GetData(data, 0, 0, height, width, i, i + 1);
+		BlankCorrected.GetData(data, 0, 0, height, width, i, i + 1);
 		ComplexBuffers[0]->Write(data);
 
 		// Shift image with no padding
