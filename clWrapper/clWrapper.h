@@ -1,5 +1,4 @@
 // All Includes for functioning of clWrapper
-#pragma once
 
 #include <string>
 #include <vector>

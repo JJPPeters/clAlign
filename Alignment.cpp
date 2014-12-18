@@ -1,7 +1,9 @@
 #include "stdafx.h"
 
+#include "DMDialog.h"
+
 #include "Alignment.h"
-#include<time.h>
+#include <time.h>
 #include <numeric> // for accumulate function
 #include <complex>
 
@@ -131,7 +133,9 @@ void Alignment::OverDeterminedAlign()
 	Matrix<std::complex<float>> A(m, n - 1);
 	int ind = 0;
 
-	clock_t startTime = clock();
+	parent->SetProgressRange(0, m - 1);
+
+	clock_t totalTime = clock();
 
 	for (int i = 0; i < n - 1; i++)
 	{
@@ -169,20 +173,21 @@ void Alignment::OverDeterminedAlign()
 			for (int k = i; k < j; k++)
 				A(ind, k) = 1.0;
 
+			parent->SetProgressPos(ind);
 			ind++;
 		}
 	}
 
 	std::vector<std::complex<float>> s = lsSolver(A, b);
 
-	std::vector<float> s_x(m);
-	std::vector<float> s_y(m);
+	//std::vector<float> s_x(m);
+	//std::vector<float> s_y(m);
 
-	for (int i = 0; i < s.size(); i++)
-	{
-		s_x[i] = s[i].real();
-		s_y[i] = s[i].imag();
-	}
+	//for (int i = 0; i < s.size(); i++)
+	//{
+	//	s_x[i] = s[i].real();
+	//	s_y[i] = s[i].imag();
+	//}
 
 	std::vector<std::complex<float>> temp = A*s;
 
@@ -191,7 +196,7 @@ void Alignment::OverDeterminedAlign()
 	for (int i = 0; i < temp.size(); ++i)
 		error[i] = std::abs(temp[i] - b[i]);
 
-	std::vector<int> goodlist = OverDeterminedThreshold(A, b, error, 5);
+	std::vector<int> goodlist = OverDeterminedThreshold(A, b, error, threshold);
 
 	std::vector<float> s2_x(m);
 	std::vector<float> s2_y(m);
@@ -200,12 +205,21 @@ void Alignment::OverDeterminedAlign()
 
 	for (int i = 0; i < s.size(); i++)
 	{
-		DMresult << "(" << r[i].real() << ", " << r[i].imag() << ") -> (" << s_x[i] << ", " << s_y[i] << ") -> (" << s[i].real() << ", " << s[i].imag() << ")" << DMendl;
+		// DMresult << "(" << r[i].real() << ", " << r[i].imag() << ") -> (" << s_x[i] << ", " << s_y[i] << ") -> (" << s[i].real() << ", " << s[i].imag() << ")" << DMendl;
 		s2_x[i] = s[i].real();
 		s2_y[i] = s[i].imag();
 	}
 
 	AlignImage(s2_x, s2_y);
+
+	totalTime = clock() - totalTime;
+
+	DMresult << DMendl << "Aligned stack in: " << static_cast<float>(totalTime) / CLOCKS_PER_SEC << DMendl <<DMendl;
+
+	parent->SetProgressPos(0);
+
+	clArguments->Context->WaitForQueueFinish();
+	ComplexBuffers.clear();
 }
 
 std::vector<std::complex<float>> Alignment::CrossCorrelation(std::vector<std::complex<float>> image1, std::vector<std::complex<float>>image2)
@@ -219,10 +233,9 @@ std::vector<std::complex<float>> Alignment::CrossCorrelation(std::vector<std::co
 	(*(clArguments->FFT))(ComplexBuffers[1], ComplexBuffers[1], Direction::Forwards);
 
 	// Needs to be user set at some point
-	float B = 100.0;
 
 	clArguments->kExponentialPass->SetArg(0, ComplexBuffers[0], ArgumentType::InputOutput);
-	clArguments->kExponentialPass->SetArg(1, B);
+	clArguments->kExponentialPass->SetArg(1, Bfactor);
 	clArguments->kExponentialPass->SetArg(2, width);
 	clArguments->kExponentialPass->SetArg(3, height);
 

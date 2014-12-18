@@ -14,6 +14,8 @@
 
 #include"LinearAlgebra/Matrix.h"
 
+class CDMDialog;
+
 class Alignment : public WorkerClass, public DMListenable
 {
 private:
@@ -49,6 +51,9 @@ private:
 	// Mutex purely for the Alignment class
 	boost::mutex WorkLock;
 
+	// Reference to parent dialog. Used to update progress bar
+	CDMDialog* parent;
+
 	// Image used as input
 	DMImage Image;
 
@@ -57,6 +62,12 @@ private:
 
 	// Dimensions of the dataset
 	int width, height, depth;
+
+	// Factor to use when applying exponential low pass filter
+	float Bfactor;
+
+	// Threshold for pixel movement when testing for good shifts
+	float threshold;
 
 	// Class storing all the needed OpenCL arguments (context, kernels etc.)
 	boost::shared_ptr<clArgStore> clArguments;
@@ -69,8 +80,31 @@ private:
 
 public:
 	Alignment(){}
-	Alignment(boost::shared_ptr<clArgStore> clArgs, boost::shared_ptr<boost::mutex> dlg_mtx) : clArguments(clArgs), _mtx(dlg_mtx) {};
-	
+	Alignment(CDMDialog* prnt, boost::shared_ptr<clArgStore> clArgs, boost::shared_ptr<boost::mutex> dlg_mtx, float Bf, float thresh) :
+		parent(prnt), clArguments(clArgs), _mtx(dlg_mtx), Bfactor(Bf), threshold(thresh)
+	{
+		DMresult << "ima doing da constructin" << DMendl;
+	}
+
+	~Alignment()
+	{
+		DMresult << "Align destroy 1" << DMendl;
+		parent = 0;
+		DMresult << "Align destroy 2" << DMendl;
+		ComplexBuffers.clear();
+		DMresult << "Align destroy 3" << DMendl;
+		clArguments.reset();
+		DMresult << "Align destroy 4" << DMendl;
+		OutputBuffer.reset();
+		DMresult << "Align destroy 5" << DMendl;
+		_mtx.reset();
+		DMresult << "Align destroy 6" << DMendl;
+		Image.~DMImage();
+		DMresult << "Align destroy 7" << DMendl;
+		BlankCorrected.~DMImage();
+		DMresult << "Align destroy 8" << DMendl;
+	}
+
 	void StartAlign();
 	void Process();
 };

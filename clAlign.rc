@@ -99,12 +99,17 @@ END
 // Dialog
 //
 
-IDD_DMDIALOG DIALOGEX 0, 0, 125, 170
+IDD_DMDIALOG DIALOGEX 0, 0, 125, 114
 STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE
 FONT 8, "Calibri", 400, 0, 0x0
 BEGIN
-    PUSHBUTTON      "Align",IDC_BTN_GPA,37,28,50,14
-    COMBOBOX        IDC_CMB_DEVICES,19,142,87,30,CBS_DROPDOWNLIST | CBS_SORT | WS_DISABLED | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Align",IDC_BTN_ALIGN,38,89,50,14
+    COMBOBOX        IDC_CMB_DEVICES,19,10,87,30,CBS_DROPDOWNLIST | CBS_SORT | WS_DISABLED | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_TXT_BFACT,60,32,46,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_TXT_THRESH,60,51,46,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_PROGRESS,"msctls_progress32",WS_BORDER,19,70,87,14
+    RTEXT           "B factor:",IDC_STATIC1,19,32,36,14,SS_CENTERIMAGE
+    RTEXT           "Threshold:",IDC_STATIC2,19,51,36,14,SS_CENTERIMAGE
 END
 
 
@@ -120,11 +125,21 @@ BEGIN
     BEGIN
         VERTGUIDE, 19
         VERTGUIDE, 38
+        VERTGUIDE, 55
+        VERTGUIDE, 60
         VERTGUIDE, 87
         VERTGUIDE, 106
-        BOTTOMMARGIN, 165
-        HORZGUIDE, 16
-        HORZGUIDE, 154
+        HORZGUIDE, 10
+        HORZGUIDE, 22
+        HORZGUIDE, 32
+        HORZGUIDE, 46
+        HORZGUIDE, 51
+        HORZGUIDE, 65
+        HORZGUIDE, 70
+        HORZGUIDE, 84
+        HORZGUIDE, 89
+        HORZGUIDE, 103
+        HORZGUIDE, 113
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -147,7 +162,6 @@ END
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE 9, 1
 #pragma code_page(1252)
-//#include "res\TemplateMFCDialogPlugIn.rc2"  // non-Microsoft Visual C++ edited resources
 #include "afxres.rc"     // Standard components
 #endif
 

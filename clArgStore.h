@@ -57,4 +57,19 @@ public:
 			DMresult << "Error: " << message << ". Error code " << Context->GetStatus() << DMendl;
 		return ok;
 	};
+
+	/*clArgStore& operator=(const clArgStore& RHS)
+	{
+		Context = RHS.Context;
+		FFT = RHS.FFT;
+
+		kMultiCorrelation = RHS.kMultiCorrelation;
+		kFFTShift = RHS.kFFTShift;
+		kBilinearInterpolate = RHS.kBilinearInterpolate;
+		kExponentialPass = RHS.kExponentialPass;
+
+		haveDevice = RHS.haveDevice;
+
+		return *this;
+	}*/
 };

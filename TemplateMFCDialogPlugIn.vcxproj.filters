@@ -39,13 +39,7 @@
     <ClCompile Include="DMDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DialogPlugIn.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="NumEdit.cpp">
-      <Filter>Source Files\Boiler</Filter>
-    </ClCompile>
-    <ClCompile Include="amsEdit.cpp">
       <Filter>Source Files\Boiler</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
@@ -87,6 +81,9 @@
     <ClCompile Include="DMWrapper\DMListener.cpp">
       <Filter>Source Files\DM</Filter>
     </ClCompile>
+    <ClCompile Include="DialogPlugIn.cpp">
+      <Filter>Source Files\Boiler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DMDialog.h">
@@ -99,12 +96,6 @@
       <Filter>Header Files\Boiler</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
-      <Filter>Header Files\Boiler</Filter>
-    </ClInclude>
-    <ClInclude Include="DialogPlugIn.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="amsEdit.h">
       <Filter>Header Files\Boiler</Filter>
     </ClInclude>
     <ClInclude Include="clWrapper\Auto.h">
@@ -208,6 +199,9 @@
     </ClInclude>
     <ClInclude Include="LinearAlgebra\SVD.h">
       <Filter>Header Files\LinearAlgebra</Filter>
+    </ClInclude>
+    <ClInclude Include="DialogPlugIn.h">
+      <Filter>Header Files\Boiler</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

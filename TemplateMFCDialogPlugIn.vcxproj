@@ -719,7 +719,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Alignment.cpp" />
-    <ClCompile Include="amsEdit.cpp" />
     <ClCompile Include="clWrapper\clContext.cpp" />
     <ClCompile Include="clWrapper\clDevice.cpp" />
     <ClCompile Include="clWrapper\clFourier.cpp" />
@@ -764,7 +763,6 @@
     <ClInclude Include="clWrapper\Notify.h" />
     <ClInclude Include="clWrapper\stdafx.h" />
     <ClInclude Include="clWrapper\targetver.h" />
-    <ClInclude Include="amsEdit.h" />
     <ClInclude Include="DMDialog.h" />
     <ClInclude Include="DMWrapper\DMColmap.h" />
     <ClInclude Include="DMWrapper\DMImage-ReadWrite.h" />

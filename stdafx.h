@@ -71,7 +71,6 @@
 
 #include "DMPlugInBasic.h"
 #include "DMPlugInMFCUtility.h"
-#include "amsEdit.h"
 
 using namespace Gatan;
 namespace DigitalMicrograph = Gatan::DM;

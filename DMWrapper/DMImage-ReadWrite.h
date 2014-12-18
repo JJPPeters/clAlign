@@ -17,7 +17,7 @@ void DMImage::GetData(std::vector<T> &destination, int t, int l, int b, int r, i
 }
 
 template <typename T>
-void DMImage::SetRealData(std::vector<T> &source, int offset)
+void DMImage::SetRealData(const std::vector<T> &source, int offset)
 {
 	if (source.size() > (width * height * depth) - offset)
 		throw std::invalid_argument("Array sizes must match");
@@ -35,13 +35,13 @@ void DMImage::SetRealData(std::vector<T> &source, int offset)
 }
 
 template <typename T>
-void DMImage::SetRealData(std::vector<T> &source)
+void DMImage::SetRealData(const std::vector<T> &source)
 {
 	SetRealData(source, 0);
 }
 
 template <typename T>
-void DMImage::SetComplexData(std::vector<T> &source, int offset, ShowComplex doComplex)
+void DMImage::SetComplexData(const std::vector<T> &source, int offset, ShowComplex doComplex)
 {
 	if (source.size() > (width * height * depth) - offset){
 		throw std::invalid_argument("Array sizes must match");
@@ -60,7 +60,7 @@ void DMImage::SetComplexData(std::vector<T> &source, int offset, ShowComplex doC
 }
 
 template <typename T>
-void DMImage::SetComplexData(std::vector<T> &source, ShowComplex doComplex)
+void DMImage::SetComplexData(const std::vector<T> &source, ShowComplex doComplex)
 {
 	SetComplexData(source, 0, doComplex);
 }
@@ -78,7 +78,7 @@ void DMImage::GetLockerData(std::vector<T> &destination, int t, int l, int b, in
 }
 
 template <typename U, typename T>
-void DMImage::SetRealLockerData(std::vector<T> &source, int offset)
+void DMImage::SetRealLockerData(const std::vector<T> &source, int offset)
 {
 
 	Gatan::PlugIn::ImageDataLocker iLocker = Gatan::PlugIn::ImageDataLocker(Image);
@@ -90,7 +90,7 @@ void DMImage::SetRealLockerData(std::vector<T> &source, int offset)
 }
 
 template <typename U, typename T>
-void DMImage::SetComplexLockerData(std::vector<T> &source, int offset, ShowComplex doComplex)
+void DMImage::SetComplexLockerData(const std::vector<T> &source, int offset, ShowComplex doComplex)
 {
 	Gatan::PlugIn::ImageDataLocker iLocker = Gatan::PlugIn::ImageDataLocker(Image);
 	U* idata = static_cast<U*>(iLocker.get());

@@ -31,7 +31,7 @@ private:
 	cl_command_queue Queue;
 	cl_command_queue IOQueue;
 	clDevice ContextDevice;
-	std::list<MemoryRecord*> MemList;
+	std::list<boost::shared_ptr<MemoryRecord>> MemList;
 
 public:
 	clContext(clDevice _ContextDevice, cl_context _Context, cl_command_queue _Queue, cl_int _Status)
@@ -60,7 +60,7 @@ public:
 		return total;
 	}
 
-	void RemoveMemRecord(MemoryRecord* rec)
+	void RemoveMemRecord(boost::shared_ptr<MemoryRecord> rec)
 	{
 		MemList.remove(rec);
 	}

@@ -1,7 +1,11 @@
 #pragma once
 
 #include "stdafx.h"
+#include "Resource.h"
+
+#include "NumEdit.h"
 #include "WorkerClass.h"
+
 #include "clWrapper/clWrapper.h"
 #include "clArgStore.h"
 #include "Alignment.h"
@@ -35,10 +39,21 @@ public:
 	afx_msg void OnBnClickedBtnGpa();
 private:
 	CComboBox combo_CLdev;
+	CNumEdit txt_bfactor;
+	CString s_bfactor;
+	CNumEdit txt_thresh;
+	CString s_thresh;
+	CProgressCtrl progressBar;
+
 	boost::shared_ptr<boost::mutex> _mtx;
+	boost::mutex progress_mtx;
 	std::list<clDevice> Devices;
 
 	boost::shared_ptr<Alignment> Align;
 
 	boost::shared_ptr<clArgStore> clArguments;
+public:
+
+	void SetProgressRange(int start, int end) { boost::lock_guard<boost::mutex> lock(progress_mtx); progressBar.SetRange(start, end); }
+	void SetProgressPos(int pos) { boost::lock_guard<boost::mutex> lock(progress_mtx); progressBar.SetPos(pos); }
 };
