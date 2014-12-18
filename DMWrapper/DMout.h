@@ -1,5 +1,7 @@
 #pragma once
 
+#include "stdafx.h"
+
 static struct DMOutResult
 {
 	DMOutResult& operator<<(std::string value)

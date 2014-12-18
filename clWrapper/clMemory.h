@@ -19,8 +19,8 @@ class clMemory : public AutoPolicy<T>
 {
 private:
 	cl_mem Buffer;
-	boost::shared_ptr<clContext> Context;
-	boost::shared_ptr<MemoryRecord> Rec;
+	clContext* Context;
+	MemoryRecord* Rec;
 
 	// Will wait for this event to complete before performing read.
 	clEventPtr StartReadEvent;
@@ -99,9 +99,8 @@ public:
 	};
 
 	~clMemory<T,AutoPolicy>(){ 
-			Context->RemoveMemRecord(Rec);
-			Release();
-			DMresult << "shit 3" << DMendl;
+		Context->RemoveMemRecord(Rec);
+		Release();
 	};
 
 private:
@@ -109,10 +108,8 @@ private:
 	
 	void Release()
 	{
-		DMresult << "shit " << DMendl;
 		if(Buffer) // Does this work?
 			clReleaseMemObject(Buffer);
-		DMresult << "shit 2" << DMendl;
 	};
 };
 #endif
