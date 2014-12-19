@@ -86,24 +86,24 @@ public:
 		DMresult << "ima doing da constructin" << DMendl;
 	}
 
-	~Alignment()
-	{
-		DMresult << "Align destroy 1" << DMendl;
-		parent = 0;
-		DMresult << "Align destroy 2" << DMendl;
-		ComplexBuffers.clear();
-		DMresult << "Align destroy 3" << DMendl;
-		clArguments.reset();
-		DMresult << "Align destroy 4" << DMendl;
-		OutputBuffer.reset();
-		DMresult << "Align destroy 5" << DMendl;
-		_mtx.reset();
-		DMresult << "Align destroy 6" << DMendl;
-		Image.~DMImage();
-		DMresult << "Align destroy 7" << DMendl;
-		BlankCorrected.~DMImage();
-		DMresult << "Align destroy 8" << DMendl;
-	}
+	//~Alignment()
+	//{
+	//	DMresult << "Align destroy 1" << DMendl;
+	//	parent = 0;
+	//	DMresult << "Align destroy 2" << DMendl;
+	//	ComplexBuffers.clear();
+	//	DMresult << "Align destroy 3" << DMendl;
+	//	clArguments.reset();
+	//	DMresult << "Align destroy 4" << DMendl;
+	//	OutputBuffer.reset();
+	//	DMresult << "Align destroy 5" << DMendl;
+	//	_mtx.reset();
+	//	DMresult << "Align destroy 6" << DMendl;
+	//	Image.~DMImage();
+	//	DMresult << "Align destroy 7" << DMendl;
+	//	BlankCorrected.~DMImage();
+	//	DMresult << "Align destroy 8" << DMendl;
+	//}
 
 	void StartAlign();
 	void Process();

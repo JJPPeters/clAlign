@@ -91,17 +91,7 @@ void CDMDialog::OnBnClickedBtnGpa()
 	float Bf = boost::lexical_cast<float>(s_bfactor);
 	float thresh = boost::lexical_cast<float>(s_thresh);
 
-	DMresult << "TP1" << DMendl;
-
-	Align.reset();
-
-	DMresult << "TP1a" << DMendl;
-
 	Align.reset( new Alignment(this, clArguments, _mtx, Bf, thresh) );
 
-	DMresult << "TP2" << DMendl;
-
 	Align->StartAlign();
-
-	DMresult << "TP3" << DMendl;
 }
