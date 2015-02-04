@@ -4,6 +4,8 @@
 #include "CL/Opencl.h"
 #include "boost/shared_ptr.hpp"
 
+#include "../DMwrapper/DMout.h"
+
 // Used to synchronise OpenCL functions that depend on other results.
 class clEvent
 {
@@ -13,7 +15,7 @@ private:
 public:
 
 	clEvent(): hasBeenSet(false){};
-	~clEvent(){ if(isSet()){ clReleaseEvent(event); }};
+	~clEvent(){ if (isSet()){ DMresult << "RELASE1" << DMendl; clReleaseEvent(event); DMresult << "RELASE2" << DMendl; } };
 	
 	cl_event& GetEvent(){ return event; };
 	bool isSet(){ return hasBeenSet;};

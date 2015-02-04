@@ -49,9 +49,8 @@ private:
 	boost::mutex progress_mtx;
 	std::list<clDevice> Devices;
 
-	boost::shared_ptr<Alignment> Align;
-
-	boost::shared_ptr<clArgStore> clArguments;
+	//boost::shared_ptr<Alignment> Align;
+	Alignment Align;
 public:
 
 	void SetProgressRange(int start, int end) { boost::lock_guard<boost::mutex> lock(progress_mtx); progressBar.SetRange(start, end); }

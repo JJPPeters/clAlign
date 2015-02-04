@@ -82,13 +82,13 @@ public:
 	};
 
 	clMemory<T,AutoPolicy>(clContext* context, size_t size, cl_mem buffer, MemoryRecord* rec) : Context(context), Buffer(buffer),
-		AutoPolicy<T>(size), FinishedReadEvent(new clEvent), FinishedWriteEvent(new clEvent), StartReadEvent(new clEvent), StartWriteEvent(new clEvent), Rec(rec){};
+		AutoPolicy<T>(size), FinishedReadEvent(new clEvent), FinishedWriteEvent(new clEvent), StartReadEvent(new clEvent), StartWriteEvent(new clEvent), Rec(rec) { DMresult << "Construct1" << DMendl;  };
 
 	clMemory<T,AutoPolicy>(clContext* context, size_t sizex, size_t sizey, cl_mem buffer, MemoryRecord* rec) : Context(context), Buffer(buffer),
-		AutoPolicy<T>(sizex,sizey), FinishedReadEvent(new clEvent), FinishedWriteEvent(new clEvent), StartReadEvent(new clEvent), StartWriteEvent(new clEvent), Rec(rec){};
+		AutoPolicy<T>(sizex, sizey), FinishedReadEvent(new clEvent), FinishedWriteEvent(new clEvent), StartReadEvent(new clEvent), StartWriteEvent(new clEvent), Rec(rec){ DMresult << "Construct2" << DMendl; };
 
 	clMemory<T,AutoPolicy>(clContext* context, size_t sizex, size_t sizey, size_t sizez, cl_mem buffer, MemoryRecord* rec) : Context(context), Buffer(buffer),
-		AutoPolicy<T>(sizex,sizey,sizez), FinishedReadEvent(new clEvent), FinishedWriteEvent(new clEvent), StartReadEvent(new clEvent), StartWriteEvent(new clEvent), Rec(rec){};
+		AutoPolicy<T>(sizex, sizey, sizez), FinishedReadEvent(new clEvent), FinishedWriteEvent(new clEvent), StartReadEvent(new clEvent), StartWriteEvent(new clEvent), Rec(rec){ DMresult << "Construct3" << DMendl; };
 
 	//clMemory<T,AutoPolicy>(const clMemory<T,AutoPolicy>& RHS) : Context(RHS.Context), Buffer(RHS.Buffer), Size(RHS.Size), AutoPolicy<T>(RHS.Size), StartReadEvent(RHS.StartReadEvent)
 	//,StartWriteEvent(RHS.StartWriteEvent),FinishedReadEvent(RHS.FinishedReadEvent),FinishedWriteEvent(RHS.FinishedWriteEvent){};
@@ -99,8 +99,11 @@ public:
 	};
 
 	~clMemory<T,AutoPolicy>(){ 
+		DMresult << "DESTROY1" << DMendl;
 		Context->RemoveMemRecord(Rec);
+		DMresult << "DESTROY2" << DMendl;
 		Release();
+		DMresult << "DESTROY3" << DMendl;
 	};
 
 private:
@@ -108,6 +111,7 @@ private:
 	
 	void Release()
 	{
+		DMresult << "RELEASE" << DMendl;
 		if(Buffer) // Does this work?
 			clReleaseMemObject(Buffer);
 	};

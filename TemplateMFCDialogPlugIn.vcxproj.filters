@@ -12,9 +12,6 @@
     <Filter Include="Header Files\Boiler">
       <UniqueIdentifier>{939e427d-8c54-4e44-85b3-e6962fa2e08c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\OpenCL">
-      <UniqueIdentifier>{789e1c57-5c52-458a-850e-50a4d4891f31}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\DM">
       <UniqueIdentifier>{65c79df2-e309-4065-a05c-c6acfccb361d}</UniqueIdentifier>
     </Filter>
@@ -25,14 +22,17 @@
     <Filter Include="Source Files\Boiler">
       <UniqueIdentifier>{e45707d3-786c-47c1-ba37-210393ff3989}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\OpenCL">
-      <UniqueIdentifier>{2fb0ac2e-fbf2-4e07-8b5b-1383f3c3a81d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\DM">
       <UniqueIdentifier>{153c2892-f721-4bff-ac90-9a4c517ac897}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\LinearAlgebra">
       <UniqueIdentifier>{096b35d7-9478-4344-9564-4885c9a502bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CL">
+      <UniqueIdentifier>{fe262d81-9874-4e91-81a4-836e680e3c50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CL">
+      <UniqueIdentifier>{e7181aeb-4646-49e0-ba62-5d6f67669987}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -45,29 +45,8 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files\Boiler</Filter>
     </ClCompile>
-    <ClCompile Include="clWrapper\clContext.cpp">
-      <Filter>Source Files\OpenCL</Filter>
-    </ClCompile>
-    <ClCompile Include="clWrapper\clStatic.cpp">
-      <Filter>Source Files\OpenCL</Filter>
-    </ClCompile>
     <ClCompile Include="WorkerClass.cpp">
       <Filter>Source Files\Boiler</Filter>
-    </ClCompile>
-    <ClCompile Include="clWrapper\stdafx.cpp">
-      <Filter>Source Files\OpenCL</Filter>
-    </ClCompile>
-    <ClCompile Include="clWrapper\Misc.cpp">
-      <Filter>Source Files\OpenCL</Filter>
-    </ClCompile>
-    <ClCompile Include="clWrapper\clFourier.cpp">
-      <Filter>Source Files\OpenCL</Filter>
-    </ClCompile>
-    <ClCompile Include="clWrapper\clKernel.cpp">
-      <Filter>Source Files\OpenCL</Filter>
-    </ClCompile>
-    <ClCompile Include="clWrapper\clDevice.cpp">
-      <Filter>Source Files\OpenCL</Filter>
     </ClCompile>
     <ClCompile Include="Alignment.cpp">
       <Filter>Source Files</Filter>
@@ -84,6 +63,30 @@
     <ClCompile Include="DialogPlugIn.cpp">
       <Filter>Source Files\Boiler</Filter>
     </ClCompile>
+    <ClCompile Include="clArgStore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="clWrapper\clContext.cpp">
+      <Filter>Source Files\CL</Filter>
+    </ClCompile>
+    <ClCompile Include="clWrapper\clDevice.cpp">
+      <Filter>Source Files\CL</Filter>
+    </ClCompile>
+    <ClCompile Include="clWrapper\clFourier.cpp">
+      <Filter>Source Files\CL</Filter>
+    </ClCompile>
+    <ClCompile Include="clWrapper\clKernel.cpp">
+      <Filter>Source Files\CL</Filter>
+    </ClCompile>
+    <ClCompile Include="clWrapper\clStatic.cpp">
+      <Filter>Source Files\CL</Filter>
+    </ClCompile>
+    <ClCompile Include="clWrapper\Misc.cpp">
+      <Filter>Source Files\CL</Filter>
+    </ClCompile>
+    <ClCompile Include="clWrapper\stdafx.cpp">
+      <Filter>Source Files\CL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DMDialog.h">
@@ -98,59 +101,11 @@
     <ClInclude Include="stdafx.h">
       <Filter>Header Files\Boiler</Filter>
     </ClInclude>
-    <ClInclude Include="clWrapper\Auto.h">
-      <Filter>Header Files\OpenCL</Filter>
-    </ClInclude>
-    <ClInclude Include="clWrapper\clContext.h">
-      <Filter>Header Files\OpenCL</Filter>
-    </ClInclude>
-    <ClInclude Include="clWrapper\clDevice.h">
-      <Filter>Header Files\OpenCL</Filter>
-    </ClInclude>
-    <ClInclude Include="clWrapper\clEvent.h">
-      <Filter>Header Files\OpenCL</Filter>
-    </ClInclude>
-    <ClInclude Include="clWrapper\clKernel.h">
-      <Filter>Header Files\OpenCL</Filter>
-    </ClInclude>
-    <ClInclude Include="clWrapper\clMemory.h">
-      <Filter>Header Files\OpenCL</Filter>
-    </ClInclude>
-    <ClInclude Include="clWrapper\clStatic.h">
-      <Filter>Header Files\OpenCL</Filter>
-    </ClInclude>
-    <ClInclude Include="clWrapper\clWorkgroup.h">
-      <Filter>Header Files\OpenCL</Filter>
-    </ClInclude>
-    <ClInclude Include="clWrapper\clWrapper.h">
-      <Filter>Header Files\OpenCL</Filter>
-    </ClInclude>
-    <ClInclude Include="clWrapper\Manual.h">
-      <Filter>Header Files\OpenCL</Filter>
-    </ClInclude>
-    <ClInclude Include="clWrapper\Notify.h">
-      <Filter>Header Files\OpenCL</Filter>
-    </ClInclude>
-    <ClInclude Include="clWrapper\targetver.h">
-      <Filter>Header Files\OpenCL</Filter>
-    </ClInclude>
     <ClInclude Include="WorkerClass.h">
       <Filter>Header Files\Boiler</Filter>
     </ClInclude>
-    <ClInclude Include="clWrapper\stdafx.h">
-      <Filter>Header Files\OpenCL</Filter>
-    </ClInclude>
-    <ClInclude Include="clWrapper\Misc.h">
-      <Filter>Header Files\OpenCL</Filter>
-    </ClInclude>
-    <ClInclude Include="clWrapper\clFourier.h">
-      <Filter>Header Files\OpenCL</Filter>
-    </ClInclude>
     <ClInclude Include="clArgStore.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="clWrapper\Enums.h">
-      <Filter>Header Files\OpenCL</Filter>
     </ClInclude>
     <ClInclude Include="Alignment.h">
       <Filter>Header Files</Filter>
@@ -202,6 +157,54 @@
     </ClInclude>
     <ClInclude Include="DialogPlugIn.h">
       <Filter>Header Files\Boiler</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\Auto.h">
+      <Filter>Header Files\CL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\clContext.h">
+      <Filter>Header Files\CL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\clDevice.h">
+      <Filter>Header Files\CL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\clEvent.h">
+      <Filter>Header Files\CL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\clFourier.h">
+      <Filter>Header Files\CL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\clKernel.h">
+      <Filter>Header Files\CL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\clMemory.h">
+      <Filter>Header Files\CL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\clStatic.h">
+      <Filter>Header Files\CL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\clWorkgroup.h">
+      <Filter>Header Files\CL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\clWrapper.h">
+      <Filter>Header Files\CL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\Enums.h">
+      <Filter>Header Files\CL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\Manual.h">
+      <Filter>Header Files\CL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\Misc.h">
+      <Filter>Header Files\CL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\Notify.h">
+      <Filter>Header Files\CL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\stdafx.h">
+      <Filter>Header Files\CL</Filter>
+    </ClInclude>
+    <ClInclude Include="clWrapper\targetver.h">
+      <Filter>Header Files\CL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -14,34 +14,48 @@
 void Alignment::Process()
 {
 	boost::lock_guard<boost::mutex> lock(*_mtx);
-	if (clArguments->haveDevice)
+	if (clArgStore::haveDevice)
 		Start();
 	else
-		DMresult << "Must select OpenCL device to do live GPA" << DMendl;
+		DMresult << "Must select OpenCL device to do Alignment" << DMendl;
 }
 
 
 void Alignment::StartAlign()
 {
+	DMresult << "TP1" << DMendl;
 	// Get the front image
 	try
 		{ Image.fromFront(); }
 	catch (const std::invalid_argument& e)
 		{ DMresult << "ERROR: " << e.what() << DMendl; return; }
 
+	DMresult << "TP2" << DMendl;
+
 	width = Image.getWidth();
 	height = Image.getHeight();
 
 	// Create OpenCL stuff
-	clArguments->FFT.reset(new clFourier(*(clArguments->Context), width, height));
-	if (!clArguments->CheckStatus("Setting up FFT")) return;
-	for (int i = 0; i < 4; i++)
-	{
-		ComplexBuffers.push_back((*(clArguments->Context)).CreateBuffer<std::complex<float>, Auto>(width * height));
-		if (!clArguments->CheckStatus("Creating buffer")) return;
-	}
+	clArgStore::FFT.reset(new clFourier(*(clArgStore::Context), width, height));
+	if (!clArgStore::CheckStatus("Setting up FFT")) return;
+
+	DMresult << "TP3" << DMendl;
+
+	//DMresult << "Clearing buffers. n = " << clArgStore::ComplexBuffers.size() << DMendl;
+	//clArgStore::ComplexBuffers.clear();
+	//DMresult << "Cleared" << DMendl;
+
+	clArgStore::CreateComplex(width, height);
+
+	DMresult << "TP4" << DMendl;
+
+	DMresult << clArgStore::ComplexBuffers.size() << " = buffer length" << DMendl;
+
+	DMresult << "TP5" << DMendl;
 
 	Process();
+
+	DMresult << "Leaving StartAlign" << DMendl;
 }
 
 void Alignment::DoWork()
@@ -62,6 +76,8 @@ void Alignment::DoWork()
 	RemoveBlankFrames();
 
 	OverDeterminedAlign();
+
+	DMresult << "Finished DoWork" << DMendl;
 }
 
 void Alignment::RemoveBlankFrames()
@@ -217,57 +233,56 @@ void Alignment::OverDeterminedAlign()
 	DMresult << DMendl << "Aligned stack in: " << static_cast<float>(totalTime) / CLOCKS_PER_SEC << DMendl <<DMendl;
 
 	parent->SetProgressPos(0);
+	DMresult << "Finished Alignment" << DMendl;
 
-	clArguments->Context->WaitForQueueFinish();
-	ComplexBuffers.clear();
 }
 
-std::vector<std::complex<float>> Alignment::CrossCorrelation(std::vector<std::complex<float>> image1, std::vector<std::complex<float>>image2)
+std::vector<std::complex<float>> Alignment::CrossCorrelation(std::vector<std::complex<float>>& image1, std::vector<std::complex<float>>& image2)
 {
 	clWorkGroup GlobalWork(width, height, 1);
 
-	ComplexBuffers[0]->Write(image1);
-	ComplexBuffers[1]->Write(image2);
+	clArgStore::ComplexBuffers[0]->Write(image1);
+	clArgStore::ComplexBuffers[1]->Write(image2);
 
-	(*(clArguments->FFT))(ComplexBuffers[0], ComplexBuffers[0], Direction::Forwards);
-	(*(clArguments->FFT))(ComplexBuffers[1], ComplexBuffers[1], Direction::Forwards);
+	(*(clArgStore::FFT))(clArgStore::ComplexBuffers[0], clArgStore::ComplexBuffers[0], Direction::Forwards);
+	(*(clArgStore::FFT))(clArgStore::ComplexBuffers[1], clArgStore::ComplexBuffers[1], Direction::Forwards);
 
 	// Needs to be user set at some point
 
-	clArguments->kExponentialPass->SetArg(0, ComplexBuffers[0], ArgumentType::InputOutput);
-	clArguments->kExponentialPass->SetArg(1, Bfactor);
-	clArguments->kExponentialPass->SetArg(2, width);
-	clArguments->kExponentialPass->SetArg(3, height);
+	clArgStore::kExponentialPass->SetArg(0, clArgStore::ComplexBuffers[0], ArgumentType::InputOutput);
+	clArgStore::kExponentialPass->SetArg(1, Bfactor);
+	clArgStore::kExponentialPass->SetArg(2, width);
+	clArgStore::kExponentialPass->SetArg(3, height);
 
-	(*clArguments->kExponentialPass)(GlobalWork);
+	(*clArgStore::kExponentialPass)(GlobalWork);
 
-	clArguments->kExponentialPass->SetArg(0, ComplexBuffers[1], ArgumentType::InputOutput);
+	clArgStore::kExponentialPass->SetArg(0, clArgStore::ComplexBuffers[1], ArgumentType::InputOutput);
 
-	(*clArguments->kExponentialPass)(GlobalWork);
+	(*clArgStore::kExponentialPass)(GlobalWork);
 
-	clArguments->kMultiCorrelation->SetArg(0, ComplexBuffers[0], ArgumentType::Input);
-	clArguments->kMultiCorrelation->SetArg(1, ComplexBuffers[1], ArgumentType::Input);
-	clArguments->kMultiCorrelation->SetArg(2, ComplexBuffers[2], ArgumentType::Output);
-	clArguments->kMultiCorrelation->SetArg(3, ComplexBuffers[3], ArgumentType::Output);
-	clArguments->kMultiCorrelation->SetArg(4, width);
-	clArguments->kMultiCorrelation->SetArg(5, height);
+	clArgStore::kMultiCorrelation->SetArg(0, clArgStore::ComplexBuffers[0], ArgumentType::Input);
+	clArgStore::kMultiCorrelation->SetArg(1, clArgStore::ComplexBuffers[1], ArgumentType::Input);
+	clArgStore::kMultiCorrelation->SetArg(2, clArgStore::ComplexBuffers[2], ArgumentType::Output);
+	clArgStore::kMultiCorrelation->SetArg(3, clArgStore::ComplexBuffers[3], ArgumentType::Output);
+	clArgStore::kMultiCorrelation->SetArg(4, width);
+	clArgStore::kMultiCorrelation->SetArg(5, height);
 
-	(*clArguments->kMultiCorrelation)(GlobalWork);
+	(*clArgStore::kMultiCorrelation)(GlobalWork);
 
-	(*(clArguments->FFT))(ComplexBuffers[2], ComplexBuffers[2], Direction::Inverse);
-	(*(clArguments->FFT))(ComplexBuffers[3], ComplexBuffers[3], Direction::Inverse);
+	(*(clArgStore::FFT))(clArgStore::ComplexBuffers[2], clArgStore::ComplexBuffers[2], Direction::Inverse);
+	(*(clArgStore::FFT))(clArgStore::ComplexBuffers[3], clArgStore::ComplexBuffers[3], Direction::Inverse);
 
-	clArguments->kFFTShift->SetArg(0, ComplexBuffers[3], ArgumentType::Input);
-	clArguments->kFFTShift->SetArg(1, ComplexBuffers[1], ArgumentType::Output);
-	clArguments->kFFTShift->SetArg(2, width);
-	clArguments->kFFTShift->SetArg(3, height);
+	clArgStore::kFFTShift->SetArg(0, clArgStore::ComplexBuffers[3], ArgumentType::Input);
+	clArgStore::kFFTShift->SetArg(1, clArgStore::ComplexBuffers[1], ArgumentType::Output);
+	clArgStore::kFFTShift->SetArg(2, width);
+	clArgStore::kFFTShift->SetArg(3, height);
 
-	(*clArguments->kFFTShift)(GlobalWork);
+	(*clArgStore::kFFTShift)(GlobalWork);
 
-	return ComplexBuffers[1]->GetLocal();
+	return clArgStore::ComplexBuffers[1]->GetLocal();
 }
 
-coord<int> Alignment::FindMaxima(std::vector<std::complex<float>> &data)
+coord<int> Alignment::FindMaxima(std::vector<std::complex<float>>& data)
 {
 	assert(data.size() = width * height);
 
@@ -292,7 +307,7 @@ coord<int> Alignment::FindMaxima(std::vector<std::complex<float>> &data)
 	return coord<int>(x, y);
 }
 
-int Alignment::FindMinimaIndex(std::vector<float> &data)
+int Alignment::FindMinimaIndex(std::vector<float>& data)
 {
 	int minPosition = 0;
 	float minValue = data[0];
@@ -308,7 +323,7 @@ int Alignment::FindMinimaIndex(std::vector<float> &data)
 	return minPosition;
 }
 
-coord<float> Alignment::FindVertexParabola(std::vector<float> data)
+coord<float> Alignment::FindVertexParabola(std::vector<float>& data)
 {
 	assert(data.size() == 9);
 
@@ -405,7 +420,7 @@ std::vector<int> Alignment::OverDeterminedThreshold(Matrix<std::complex<float>> 
 	return goodlist;
 }
 
-void Alignment::AlignImage(std::vector<float> shiftx, std::vector<float> shifty)
+void Alignment::AlignImage(std::vector<float>& shiftx, std::vector<float>& shifty)
 {
 	// First calculate the cumulative shifts
 
@@ -450,7 +465,7 @@ void Alignment::AlignImage(std::vector<float> shiftx, std::vector<float> shifty)
 	int newWidth = width - (iMax_x - iMin_x);
 	int newHeight = height - (iMax_y - iMin_y);
 
-	OutputBuffer = (*(clArguments->Context)).CreateBuffer<std::complex<float>, Auto>(newWidth * newHeight);
+	OutputBuffer = clArgStore::Context->CreateBuffer<std::complex<float>, Auto>(newWidth * newHeight);
 
 	clWorkGroup GlobalWork(width, height, 1);
 	std::vector<std::complex<float>> data(width*height);
@@ -465,31 +480,28 @@ void Alignment::AlignImage(std::vector<float> shiftx, std::vector<float> shifty)
 	for (int i = 0; i < depth; i++)
 	{
 		BlankCorrected.GetData(data, 0, 0, height, width, i, i + 1);
-		ComplexBuffers[0]->Write(data);
+		clArgStore::ComplexBuffers[0]->Write(data);
 
 		// Shift image with no padding
-		clArguments->kBilinearInterpolate->SetArg(0, ComplexBuffers[0], ArgumentType::Input);
-		clArguments->kBilinearInterpolate->SetArg(1, OutputBuffer, ArgumentType::Output);
-		clArguments->kBilinearInterpolate->SetArg(2, width);
-		clArguments->kBilinearInterpolate->SetArg(3, height);
-		clArguments->kBilinearInterpolate->SetArg(4, 0);
-		clArguments->kBilinearInterpolate->SetArg(5, 0);
-		clArguments->kBilinearInterpolate->SetArg(6, 0);
-		clArguments->kBilinearInterpolate->SetArg(7, 0);
-		clArguments->kBilinearInterpolate->SetArg(8, cumulative_x[i]);
-		clArguments->kBilinearInterpolate->SetArg(9, -cumulative_y[i]);
-		clArguments->kBilinearInterpolate->SetArg(10, newWidth);
-		clArguments->kBilinearInterpolate->SetArg(11, newHeight);
+		clArgStore::kBilinearInterpolate->SetArg(0, clArgStore::ComplexBuffers[0], ArgumentType::Input);
+		clArgStore::kBilinearInterpolate->SetArg(1, OutputBuffer, ArgumentType::Output);
+		clArgStore::kBilinearInterpolate->SetArg(2, width);
+		clArgStore::kBilinearInterpolate->SetArg(3, height);
+		clArgStore::kBilinearInterpolate->SetArg(4, 0);
+		clArgStore::kBilinearInterpolate->SetArg(5, 0);
+		clArgStore::kBilinearInterpolate->SetArg(6, 0);
+		clArgStore::kBilinearInterpolate->SetArg(7, 0);
+		clArgStore::kBilinearInterpolate->SetArg(8, cumulative_x[i]);
+		clArgStore::kBilinearInterpolate->SetArg(9, -cumulative_y[i]);
+		clArgStore::kBilinearInterpolate->SetArg(10, newWidth);
+		clArgStore::kBilinearInterpolate->SetArg(11, newHeight);
 
 		//int temp1 = iMax_y - static_cast<int>(floor(cumulative_y[i]));
 		//int temp2 = iMax_x - static_cast<int>(floor(cumulative_x[i]));
-		int temp1 = 0;
-		int temp2 = 0;
+		clArgStore::kBilinearInterpolate->SetArg(12, 0 );
+		clArgStore::kBilinearInterpolate->SetArg(13, 0 );
 
-		clArguments->kBilinearInterpolate->SetArg(12, temp1 );
-		clArguments->kBilinearInterpolate->SetArg(13, temp2 );
-
-		(*clArguments->kBilinearInterpolate)(GlobalWork);
+		(*clArgStore::kBilinearInterpolate)(GlobalWork);
 
 		std::vector<std::complex<float>> temp = OutputBuffer->GetLocal();
 

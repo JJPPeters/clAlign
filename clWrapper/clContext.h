@@ -6,6 +6,8 @@
 #include "CL/Opencl.h"
 #include "boost/shared_ptr.hpp"
 
+#include "../DMwrapper/DMout.h"
+
 template <class T, template <class> class AutoPolicy> class clMemory;
 
 enum MemoryFlags
@@ -68,6 +70,7 @@ public:
 	// Need to add functions that take sizes of all the different dimensions
 	template<class T,template <class> class AutoPolicy> boost::shared_ptr<clMemory<T,AutoPolicy>> CreateBuffer(size_t sizex, enum MemoryFlags eMemoryFlag = MemoryFlags::ReadWrite)
 	{
+		DMresult << "Construct11" << DMendl;
 		MemoryRecord* rec = new MemoryRecord(sizex*sizeof(T));
 		boost::shared_ptr<clMemory<T,AutoPolicy>> Mem( new clMemory<T,AutoPolicy>(this,sizex,clCreateBuffer(Context, eMemoryFlag, sizex*sizeof(T), 0, &Status),rec));
 		MemList.push_back(rec);
@@ -77,6 +80,7 @@ public:
 	// Need to add functions that take sizes of all the different dimensions
 	template<class T,template <class> class AutoPolicy> boost::shared_ptr<clMemory<T,AutoPolicy>> CreateBuffer(size_t sizex, size_t sizey, enum MemoryFlags eMemoryFlag = MemoryFlags::ReadWrite)
 	{
+		DMresult << "Construct22" << DMendl;
 		MemoryRecord* rec = new MemoryRecord(sizex*sizey*sizeof(T));
 		boost::shared_ptr<clMemory<T,AutoPolicy>> Mem( new clMemory<T,AutoPolicy>(this,sizex,sizey,clCreateBuffer(Context, eMemoryFlag, sizex*sizey*sizeof(T), 0, &Status),rec));
 		MemList.push_back(rec);
@@ -86,6 +90,7 @@ public:
 	// Need to add functions that take sizes of all the different dimensions
 	template<class T,template <class> class AutoPolicy> boost::shared_ptr<clMemory<T,AutoPolicy>> CreateBuffer(size_t sizex, size_t sizey, size_t sizez, enum MemoryFlags eMemoryFlag = MemoryFlags::ReadWrite)
 	{
+		DMresult << "Construct33" << DMendl;
 		MemoryRecord* rec = new MemoryRecord(sizex*sizey*sizez*sizeof(T));
 		boost::shared_ptr<clMemory<T,AutoPolicy>> Mem( new clMemory<T,AutoPolicy>(this,sizex,sizey,sizez,clCreateBuffer(Context, eMemoryFlag, sizex*sizey*sizez*sizeof(T), 0, &Status),rec));
 		MemList.push_back(rec);

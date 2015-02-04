@@ -14,29 +14,35 @@
 typedef boost::shared_ptr<clContext> shared_context;
 typedef boost::shared_ptr<clFourier> shared_fft;
 typedef boost::shared_ptr<clKernel> shared_kernel;
+typedef boost::shared_ptr<clMemory<std::complex<float>, Auto>> shared_complex;
+
 
 // Not really OpenCL but an easy place to have this for now
 typedef boost::shared_ptr<boost::mutex> shared_mutex;
 
-class clArgStore
+static class clArgStore
 {
 public:
-	shared_context Context;
+	static shared_context Context;
 
-	shared_fft FFT;
+	static shared_fft FFT;
 
-	shared_kernel kMultiCorrelation;
-	shared_kernel kFFTShift;
-	shared_kernel kBilinearInterpolate;
-	shared_kernel kExponentialPass;
+	static shared_kernel kMultiCorrelation;
+	static shared_kernel kFFTShift;
+	static shared_kernel kBilinearInterpolate;
+	static shared_kernel kExponentialPass;
 
-	bool haveDevice;
+	static std::vector<shared_complex> ComplexBuffers;
 
-	clArgStore()  : haveDevice(false) {}
+	static bool haveDevice;
 
-	clArgStore(clDevice dev) : haveDevice(false) { SetContext(dev); }
+	clArgStore() { haveDevice = false; }
 
-	void SetContext(clDevice dev)
+	//clArgStore(clDevice dev) : haveDevice(false) { SetContext(dev); }
+
+	//~clArgStore(){ DMresult << "Destructing argstore" << DMendl; }
+
+	static void SetContext(clDevice dev)
 	{
 		haveDevice = false;
 		Context = boost::make_shared<clContext>(OpenCL::MakeContext(dev, Queue::InOrder));
@@ -50,7 +56,7 @@ public:
 			haveDevice = true;
 	};
 
-	bool CheckStatus(std::string message)
+	static bool CheckStatus(std::string message)
 	{
 		bool ok = Context->GetStatus() == CL_SUCCESS;
 		if (!ok)
@@ -58,18 +64,18 @@ public:
 		return ok;
 	};
 
-	/*clArgStore& operator=(const clArgStore& RHS)
+	static bool CreateComplex(int width, int height)
 	{
-		Context = RHS.Context;
-		FFT = RHS.FFT;
-
-		kMultiCorrelation = RHS.kMultiCorrelation;
-		kFFTShift = RHS.kFFTShift;
-		kBilinearInterpolate = RHS.kBilinearInterpolate;
-		kExponentialPass = RHS.kExponentialPass;
-
-		haveDevice = RHS.haveDevice;
-
-		return *this;
-	}*/
+		for (int i = 0; i < ComplexBuffers.size(); i++)
+		{
+			DMresult << "Before " << i << " ref count = " << ComplexBuffers[i].use_count() << DMendl;
+			ComplexBuffers[i].reset();
+			DMresult << "Before " << i << " ref count = " << ComplexBuffers[i].use_count() << DMendl;
+			ComplexBuffers[i] = (*Context).CreateBuffer<std::complex<float>, Auto>(width * height);
+			DMresult << "Middle " << i << DMendl;
+			if (!CheckStatus("Creating buffer")) return false;
+			DMresult << "After " << i << DMendl;
+		}
+		return true;
+	}
 };

@@ -78,20 +78,28 @@ void CDMDialog::OnCbnSelchangeCmbDevices()
 
 	DMresult << "Selected device: " << dev.GetDeviceName() << DMendl;
 
-	clArguments.reset( new clArgStore(dev) );
+	clArgStore::SetContext(dev);
 
 	DMresult << "Setting up complete, good to go!" << DMendl;
 }
 
 void CDMDialog::OnBnClickedBtnGpa()
 {
-	if (!(clArguments->haveDevice))
+	DMresult << "Start dialog class" << DMendl;
+
+	if (!(clArgStore::haveDevice))
 		{ DMresult << "ERROR: " << " No OpenCL device selected" << DMendl; return; }
 
 	float Bf = boost::lexical_cast<float>(s_bfactor);
 	float thresh = boost::lexical_cast<float>(s_thresh);
 
-	Align.reset( new Alignment(this, clArguments, _mtx, Bf, thresh) );
+	DMresult << "Reset Align" << DMendl;
 
-	Align->StartAlign();
+	Align.SetParameters(this, _mtx, Bf, thresh);
+
+	DMresult << "StartAlign" << DMendl;
+
+	Align.StartAlign();
+
+	DMresult << "Back to dialog class" << DMendl;
 }

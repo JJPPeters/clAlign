@@ -159,7 +159,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRun|x64'">
     <IncludePath>C:\Program Files (x86)\AMD APP SDK\2.9\include;C:\Program Files (x86)\AMD\clAmdFft\include;C:\ProgramData\Gatan\DMSDK\include;D:\Cpp\boost_1_55_0;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\ProgramData\Gatan\DMSDK\lib\$(Platform);C:\Program Files (x86)\AMD\clAmdFft\lib64\import;C:\Program Files (x86)\AMD APP SDK\2.9\lib\x86_64;D:\Cpp\boost_1_55_0\lib\msvc9.0\x64\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>D:\JonP\Git\clWrapper\clWrapper\x64\Release;C:\ProgramData\Gatan\DMSDK\lib\$(Platform);C:\Program Files (x86)\AMD\clAmdFft\lib64\import;C:\Program Files (x86)\AMD APP SDK\2.9\lib\x86_64;D:\Cpp\boost_1_55_0\lib\msvc9.0\x64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <BuildLog>
@@ -719,6 +719,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Alignment.cpp" />
+    <ClCompile Include="clArgStore.cpp" />
     <ClCompile Include="clWrapper\clContext.cpp" />
     <ClCompile Include="clWrapper\clDevice.cpp" />
     <ClCompile Include="clWrapper\clFourier.cpp" />
