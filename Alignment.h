@@ -69,49 +69,21 @@ private:
 	// Threshold for pixel movement when testing for good shifts
 	float threshold;
 
-	// Vector of complex float buffers used for OpenCL. Same size as input image.
-	//std::vector<boost::shared_ptr<clMemory<std::complex<float>, Auto>>> ComplexBuffers;
-
 	// Complex flaot buffer used to get cropped output image. Different dimensions to image.
 	boost::shared_ptr<clMemory<std::complex<float>, Auto>> OutputBuffer;
 
 public:
 	Alignment()// :
 		//parent(prnt), _mtx(dlg_mtx), Bfactor(Bf), threshold(thresh)
-	{
-		DMresult << "ima doing da constructin" << DMendl;
-	}
+	{}
 
 	void SetParameters(CDMDialog* prnt, boost::shared_ptr<boost::mutex> dlg_mtx, float Bf, float thresh)
 	{
 		parent = prnt;
-		DMresult << "1" << DMendl;
 		_mtx = dlg_mtx;
-		DMresult << "2" << DMendl;
 		Bfactor = Bf;
-		DMresult << "3" << DMendl;
 		threshold = thresh;
-		DMresult << "4" << DMendl;
 	}
-
-	//~Alignment()
-	//{
-	//	DMresult << "Align destroy 1" << DMendl;
-	//	parent = 0;
-	//	DMresult << "Align destroy 2" << DMendl;
-	//	ComplexBuffers.clear();
-	//	DMresult << "Align destroy 3" << DMendl;
-	//	clArguments.reset();
-	//	DMresult << "Align destroy 4" << DMendl;
-	//	OutputBuffer.reset();
-	//	DMresult << "Align destroy 5" << DMendl;
-	//	_mtx.reset();
-	//	DMresult << "Align destroy 6" << DMendl;
-	//	Image.~DMImage();
-	//	DMresult << "Align destroy 7" << DMendl;
-	//	BlankCorrected.~DMImage();
-	//	DMresult << "Align destroy 8" << DMendl;
-	//}
 
 	void StartAlign();
 	void Process();

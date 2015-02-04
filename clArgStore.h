@@ -38,10 +38,6 @@ public:
 
 	clArgStore() { haveDevice = false; }
 
-	//clArgStore(clDevice dev) : haveDevice(false) { SetContext(dev); }
-
-	//~clArgStore(){ DMresult << "Destructing argstore" << DMendl; }
-
 	static void SetContext(clDevice dev)
 	{
 		haveDevice = false;
@@ -68,13 +64,9 @@ public:
 	{
 		for (int i = 0; i < ComplexBuffers.size(); i++)
 		{
-			DMresult << "Before " << i << " ref count = " << ComplexBuffers[i].use_count() << DMendl;
 			ComplexBuffers[i].reset();
-			DMresult << "Before " << i << " ref count = " << ComplexBuffers[i].use_count() << DMendl;
 			ComplexBuffers[i] = (*Context).CreateBuffer<std::complex<float>, Auto>(width * height);
-			DMresult << "Middle " << i << DMendl;
 			if (!CheckStatus("Creating buffer")) return false;
-			DMresult << "After " << i << DMendl;
 		}
 		return true;
 	}

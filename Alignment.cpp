@@ -23,14 +23,11 @@ void Alignment::Process()
 
 void Alignment::StartAlign()
 {
-	DMresult << "TP1" << DMendl;
 	// Get the front image
 	try
 		{ Image.fromFront(); }
 	catch (const std::invalid_argument& e)
 		{ DMresult << "ERROR: " << e.what() << DMendl; return; }
-
-	DMresult << "TP2" << DMendl;
 
 	width = Image.getWidth();
 	height = Image.getHeight();
@@ -39,23 +36,9 @@ void Alignment::StartAlign()
 	clArgStore::FFT.reset(new clFourier(*(clArgStore::Context), width, height));
 	if (!clArgStore::CheckStatus("Setting up FFT")) return;
 
-	DMresult << "TP3" << DMendl;
-
-	//DMresult << "Clearing buffers. n = " << clArgStore::ComplexBuffers.size() << DMendl;
-	//clArgStore::ComplexBuffers.clear();
-	//DMresult << "Cleared" << DMendl;
-
 	clArgStore::CreateComplex(width, height);
 
-	DMresult << "TP4" << DMendl;
-
-	DMresult << clArgStore::ComplexBuffers.size() << " = buffer length" << DMendl;
-
-	DMresult << "TP5" << DMendl;
-
 	Process();
-
-	DMresult << "Leaving StartAlign" << DMendl;
 }
 
 void Alignment::DoWork()
@@ -76,8 +59,6 @@ void Alignment::DoWork()
 	RemoveBlankFrames();
 
 	OverDeterminedAlign();
-
-	DMresult << "Finished DoWork" << DMendl;
 }
 
 void Alignment::RemoveBlankFrames()
@@ -196,15 +177,6 @@ void Alignment::OverDeterminedAlign()
 
 	std::vector<std::complex<float>> s = lsSolver(A, b);
 
-	//std::vector<float> s_x(m);
-	//std::vector<float> s_y(m);
-
-	//for (int i = 0; i < s.size(); i++)
-	//{
-	//	s_x[i] = s[i].real();
-	//	s_y[i] = s[i].imag();
-	//}
-
 	std::vector<std::complex<float>> temp = A*s;
 
 	std::vector<float> error(temp.size());
@@ -221,7 +193,6 @@ void Alignment::OverDeterminedAlign()
 
 	for (int i = 0; i < s.size(); i++)
 	{
-		// DMresult << "(" << r[i].real() << ", " << r[i].imag() << ") -> (" << s_x[i] << ", " << s_y[i] << ") -> (" << s[i].real() << ", " << s[i].imag() << ")" << DMendl;
 		s2_x[i] = s[i].real();
 		s2_y[i] = s[i].imag();
 	}
@@ -233,8 +204,6 @@ void Alignment::OverDeterminedAlign()
 	DMresult << DMendl << "Aligned stack in: " << static_cast<float>(totalTime) / CLOCKS_PER_SEC << DMendl <<DMendl;
 
 	parent->SetProgressPos(0);
-	DMresult << "Finished Alignment" << DMendl;
-
 }
 
 std::vector<std::complex<float>> Alignment::CrossCorrelation(std::vector<std::complex<float>>& image1, std::vector<std::complex<float>>& image2)
@@ -244,11 +213,11 @@ std::vector<std::complex<float>> Alignment::CrossCorrelation(std::vector<std::co
 	clArgStore::ComplexBuffers[0]->Write(image1);
 	clArgStore::ComplexBuffers[1]->Write(image2);
 
+	// FFT botyh images
 	(*(clArgStore::FFT))(clArgStore::ComplexBuffers[0], clArgStore::ComplexBuffers[0], Direction::Forwards);
 	(*(clArgStore::FFT))(clArgStore::ComplexBuffers[1], clArgStore::ComplexBuffers[1], Direction::Forwards);
 
-	// Needs to be user set at some point
-
+	// Apply user set mask to both FFTs
 	clArgStore::kExponentialPass->SetArg(0, clArgStore::ComplexBuffers[0], ArgumentType::InputOutput);
 	clArgStore::kExponentialPass->SetArg(1, Bfactor);
 	clArgStore::kExponentialPass->SetArg(2, width);
@@ -260,6 +229,7 @@ std::vector<std::complex<float>> Alignment::CrossCorrelation(std::vector<std::co
 
 	(*clArgStore::kExponentialPass)(GlobalWork);
 
+	// Do correlation
 	clArgStore::kMultiCorrelation->SetArg(0, clArgStore::ComplexBuffers[0], ArgumentType::Input);
 	clArgStore::kMultiCorrelation->SetArg(1, clArgStore::ComplexBuffers[1], ArgumentType::Input);
 	clArgStore::kMultiCorrelation->SetArg(2, clArgStore::ComplexBuffers[2], ArgumentType::Output);
@@ -269,6 +239,7 @@ std::vector<std::complex<float>> Alignment::CrossCorrelation(std::vector<std::co
 
 	(*clArgStore::kMultiCorrelation)(GlobalWork);
 
+	// Inverse correlation
 	(*(clArgStore::FFT))(clArgStore::ComplexBuffers[2], clArgStore::ComplexBuffers[2], Direction::Inverse);
 	(*(clArgStore::FFT))(clArgStore::ComplexBuffers[3], clArgStore::ComplexBuffers[3], Direction::Inverse);
 
@@ -496,10 +467,10 @@ void Alignment::AlignImage(std::vector<float>& shiftx, std::vector<float>& shift
 		clArgStore::kBilinearInterpolate->SetArg(10, newWidth);
 		clArgStore::kBilinearInterpolate->SetArg(11, newHeight);
 
-		//int temp1 = iMax_y - static_cast<int>(floor(cumulative_y[i]));
-		//int temp2 = iMax_x - static_cast<int>(floor(cumulative_x[i]));
-		clArgStore::kBilinearInterpolate->SetArg(12, 0 );
-		clArgStore::kBilinearInterpolate->SetArg(13, 0 );
+		// REMEMBER NEGATIVE Y so here the max_y is actually the minimum value!
+		// MIGHT NEED TO BE ABS
+		clArgStore::kBilinearInterpolate->SetArg(12, iMax_y ); // top
+		clArgStore::kBilinearInterpolate->SetArg(13, -iMin_x); // left
 
 		(*clArgStore::kBilinearInterpolate)(GlobalWork);
 

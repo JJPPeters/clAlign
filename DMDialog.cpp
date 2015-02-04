@@ -85,21 +85,13 @@ void CDMDialog::OnCbnSelchangeCmbDevices()
 
 void CDMDialog::OnBnClickedBtnGpa()
 {
-	DMresult << "Start dialog class" << DMendl;
-
 	if (!(clArgStore::haveDevice))
 		{ DMresult << "ERROR: " << " No OpenCL device selected" << DMendl; return; }
 
 	float Bf = boost::lexical_cast<float>(s_bfactor);
 	float thresh = boost::lexical_cast<float>(s_thresh);
 
-	DMresult << "Reset Align" << DMendl;
-
 	Align.SetParameters(this, _mtx, Bf, thresh);
 
-	DMresult << "StartAlign" << DMendl;
-
 	Align.StartAlign();
-
-	DMresult << "Back to dialog class" << DMendl;
 }

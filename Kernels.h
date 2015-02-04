@@ -11,8 +11,8 @@ static char* sMultiCorrelation =
 "		float c1i = fft1[Index].y; \n"
 "		float c2r = fft2[Index].x; \n"
 "		float c2i = fft2[Index].y; \n"
-//"		PCF[Index].x = (c1r*c2r + c1i*c2i)*rsqrt((c1r*c1r*c2r*c2r + c1i*c1i*c2i*c2i + c1r*c1r*c2i*c2i + c2r*c2r*c1i*c1i)); \n"
-//"		PCF[Index].y = (c2i*c1r - c1i*c2r)*rsqrt((c1r*c1r*c2r*c2r + c1i*c1i*c2i*c2i + c1r*c1r*c2i*c2i + c2r*c2r*c1i*c1i)); \n"
+"		PCF[Index].x = (c1r*c2r + c1i*c2i)*rsqrt((c1r*c1r*c2r*c2r + c1i*c1i*c2i*c2i + c1r*c1r*c2i*c2i + c2r*c2r*c1i*c1i)); \n"
+"		PCF[Index].y = (c2i*c1r - c1i*c2r)*rsqrt((c1r*c1r*c2r*c2r + c1i*c1i*c2i*c2i + c1r*c1r*c2i*c2i + c2r*c2r*c1i*c1i)); \n"
 "		XCF[Index].x = (c1r*c2r + c1i*c2i); \n"
 "		XCF[Index].y = (c2i*c1r - c1i*c2r); \n"
 "	}	\n"
@@ -97,6 +97,20 @@ static char* sfftShift =
 "}	\n"
 ;
 
+// Input - Input image to be interpolated
+// Output - Output image
+// fullwidth - width of iput
+// fullheight - height of input
+// padleft
+// padright
+// padtop
+// padbottom
+// xshift - amount to shift in x
+// yshift - amount to shift in y
+// newwidth
+// newheight
+// iTop
+// iLeft
 static char* sBilinearInterpolate =
 "__kernel void clBilinearInterpolate(__global const float2* Input, __global float2* Output, int fullwidth, int fullheight, int padLeft, int padRight, int padTop, int padBottom, float xShift, float yShift, int newwidth, int newheight, int iTop, int iLeft) \n"
 "{ \n"

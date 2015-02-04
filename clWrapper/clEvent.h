@@ -15,7 +15,7 @@ private:
 public:
 
 	clEvent(): hasBeenSet(false){};
-	~clEvent(){ if (isSet()){ DMresult << "RELASE1" << DMendl; clReleaseEvent(event); DMresult << "RELASE2" << DMendl; } };
+	/*~clEvent(){ if (isSet()) { int test = clReleaseEvent(event); }*/
 	
 	cl_event& GetEvent(){ return event; };
 	bool isSet(){ return hasBeenSet;};
