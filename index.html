@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="stylesheets/buttons.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -16,36 +17,43 @@
     <div class="wrapper">
       <header>
         <h1>clAlign</h1>
-        <p>Gatan Digital Micrograph plugin to align stack images using OpenCL</p>
+        <p>A Gatan Digital Micrograph plugin to align stack images using OpenCL</p>
 
-        <p class="view"><a href="https://github.com/JJPPeters/clAlign">View the Project on GitHub <small>JJPPeters/clAlign</small></a></p>
+        <a class="btn red" href="https://github.com/JJPPeters/clAlign/releases/download/v1.0/clAlign.dll">Download v1.0</a>
+        <a class="btn green" href="https://github.com/JJPPeters/clAlign">Source</a>
+        <br />
+        <a class="btn blue" href="https://github.com/JJPPeters/clAlign/zipball/master">Source ZIP</a>
+        <a class="btn blue" href="https://github.com/JJPPeters/clAlign/tarball/master">Source TAR</a>
 
 
-        <ul>
-          <li><a href="https://github.com/JJPPeters/clAlign/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/JJPPeters/clAlign/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/JJPPeters/clAlign">View On <strong>GitHub</strong></a></li>
-        </ul>
       </header>
       <section>
-        <h1>
-<a id="clalign" class="anchor" href="#clalign" aria-hidden="true"><span class="octicon octicon-link"></span></a>clAlign</h1>
+        <h2>
+<a id="clalign" class="anchor" href="#clalign" aria-hidden="true"><span class="octicon octicon-link"></span></a>About</h2>
 
 <p>clAlign is a C++ plugin for Gatan Digital Micrograph to align and sum stack images, using OpenCL where possible.</p>
 
-<p>Multiple alignment methods are implemented. A normal correlation and a method of solving an overdetermined equation as detailed by <a href="http://doi.org/10.1038/NMETH.2472">X. Li et al.</a>. In addition, both cross-correlation and phase-correlation can be used. Sub-pixel image shifts are applied using bilinear interpolation.</p>
+<p>Multiple alignment methods are implemented. A normal correlation and a method of solving an overdetermined equation as detailed by <a href="http://doi.org/10.1038/NMETH.2472">X. Li et al.</a>. In addition, both cross-correlation and phase-correlation can be used. Sub-pixel image shifts are applied using bilinear interpolation and blank frames are removed.</p>
 
-<p  align="center"><img src="Images/GUI.png" alt="clAlign GUI" width="200"></p>
+<h2>Installation</h2>
+<p>Requires x64 Digital Micrograph, OpenCL and <a href="https://github.com/clMathLibraries/clFFT">clFFT</a></p>
+<p>To install download or compile clAlign.dll and copy to the Digital Micrograph plugins directory along with the <a href="https://github.com/clMathLibraries/clFFT">clFFT</a> dll.</p>
+
+<h2>GUI</h2>
+
+<p  align="center"><img src="Images/GUI.png" alt="clAlign GUI" width="180"></p>
 
 <ol>
 <li>OpenCL device selector</li>
 <li>Alignment method selector. Options are 'Normal' and 'Overdetermined.'</li>
-<li>Correlation method selectors for cross-correlation (XCF) and phase correlation (PCF).</li>
+<li>Correlation method selectors for cross-correlation (XCF) and phase-correlation (PCF).</li>
 <li>B factor. The B factor is used in masking the FFT in the correlation, see <a href="http://doi.org/10.1038/NMETH.2472">X. Li et al.</a> for more.</li>
 <li>Shift limit. Provides a limit on the error of the shifts when using the overdetermined alignment method, see <a href="http://doi.org/10.1038/NMETH.2472">X. Li et al.</a> for more.</li>
 <li>Progress bar.</li>
 <li>Start alignment button.</li>
 </ol>
+
+<h2>Credit</h2>
 
 <p>Small portions of the code provided by <a href="http://doi.org/10.1038/NMETH.2472">X. Li et al.</a> have been reused here (made available under the terms of the GNU Public License version 3 (GPLv3))</p>
 
@@ -57,6 +65,6 @@
       </footer>
     </div>
     <script src="javascripts/scale.fix.js"></script>
-    
+
   </body>
 </html>
