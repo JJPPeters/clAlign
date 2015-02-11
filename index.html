@@ -1,36 +1,33 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="clAlign : Gatan Digital Micrograph plugin to align stack images using OpenCL">
+    <title>clAlign by JJPPeters</title>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>clAlign</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
-
   <body>
+    <div class="wrapper">
+      <header>
+        <h1>clAlign</h1>
+        <p>Gatan Digital Micrograph plugin to align stack images using OpenCL</p>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/JJPPeters/clAlign">View on GitHub</a>
+        <p class="view"><a href="https://github.com/JJPPeters/clAlign">View the Project on GitHub <small>JJPPeters/clAlign</small></a></p>
 
-          <h1 id="project_title">clAlign</h1>
-          <h2 id="project_tagline">Gatan Digital Micrograph plugin to align stack images using OpenCL</h2>
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/JJPPeters/clAlign/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/JJPPeters/clAlign/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
+        <ul>
+          <li><a href="https://github.com/JJPPeters/clAlign/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/JJPPeters/clAlign/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/JJPPeters/clAlign">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
         <h1>
 <a id="clalign" class="anchor" href="#clalign" aria-hidden="true"><span class="octicon octicon-link"></span></a>clAlign</h1>
 
@@ -38,7 +35,7 @@
 
 <p>Multiple alignment methods are implemented. A normal correlation and a method of solving an overdetermined equation as detailed by <a href="http://doi.org/10.1038/NMETH.2472">X. Li et al.</a>. In addition, both cross-correlation and phase-correlation can be used. Sub-pixel image shifts are applied using bilinear interpolation.</p>
 
-<p><img src="https://github.com/JJPPeters/clAlign/blob/gh-pages/Images/GUI.png" alt="clAlign GUI"></p>
+<p><img src="./Images/GUI.png" alt="clAlign GUI"></p>
 
 <ol>
 <li>OpenCL device selector</li>
@@ -56,17 +53,12 @@ where H is the spatial frequency (units of per pixel).</li>
 
 <p>A lot of the linear algebra part has been taken or reworked from Zhang Ming's work on <a href="https://code.google.com/p/tspl/">SP++</a> (GNU Public License version 2 (GPLv2))</p>
       </section>
-    </div>
-
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">clAlign maintained by <a href="https://github.com/JJPPeters">JJPPeters</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/JJPPeters">JJPPeters</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
     </div>
-
+    <script src="javascripts/scale.fix.js"></script>
     
-
   </body>
 </html>
