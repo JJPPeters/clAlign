@@ -23,11 +23,19 @@ void Alignment::Process()
 
 void Alignment::StartAlign()
 {
+	if (method != 0 && method != 1)
+		{ DMresult << "Error: Cannot get alignment method" << DMendl; return; }
+	if (correlation_method != 0 && correlation_method != 1)
+		{ DMresult << "Error: Cannot get correlation method" << DMendl; return; }
+
 	// Get the front image
 	try
 		{ Image.fromFront(); }
 	catch (const std::invalid_argument& e)
 		{ DMresult << "ERROR: " << e.what() << DMendl; return; }
+
+	if (!Image.isSquarePow2())
+		{ DMresult << "ERROR: " << "Image must be square with power of 2 dimensions" << DMendl; return; }
 
 	width = Image.getWidth();
 	height = Image.getHeight();
@@ -57,8 +65,10 @@ void Alignment::DoWork()
 
 	// Should probably find a way of skipping this step if not needed?
 	RemoveBlankFrames();
-
-	OverDeterminedAlign();
+	if (method == 0)
+		NormalAlign();
+	else if (method == 1)
+		OverDeterminedAlign();
 }
 
 void Alignment::RemoveBlankFrames()
@@ -116,6 +126,58 @@ void Alignment::RemoveBlankFrames()
 
 	// update depth
 	depth = newDepth;
+}
+
+void Alignment::NormalAlign()
+{
+	std::vector<std::complex<float>> data1(width*height);
+	std::vector<std::complex<float>> data2(width*height);
+	int n = depth;
+	std::vector<float> r_x(n - 1);
+	std::vector<float> r_y(n - 1);
+
+	parent->SetProgressRange(0, n-1);
+
+	clock_t totalTime = clock();
+
+	for (int i = 0; i < n - 1; i++)
+	{
+		BlankCorrected.GetData(data1, 0, 0, height, width, i, i + 1);
+		BlankCorrected.GetData(data2, 0, 0, height, width, i + 1, i + 2);
+
+		std::vector<std::complex<float>> XCF = CrossCorrelation(data1, data2);
+
+		coord<int> pix = FindMaxima(XCF);
+
+		// Refine the position
+		std::vector<float> area(9);
+		int max_ind = pix.y*width + pix.x;
+		int ind2 = 0;
+		for (int k = -1; k <= 1; k++)
+			for (int m = -1; m <= 1; m++)
+			{
+				area[ind2] = XCF[(max_ind + k*width) + m].real();
+				ind2++;
+			}
+		coord<float> sub_pix = FindVertexParabola(area);
+
+		// reset origin and apply refinement
+		float t1 = (static_cast<float>(pix.x) + sub_pix.x) - static_cast<float>(width) / 2;
+		float t2 = static_cast<float>(height) / 2 - (static_cast<float>(pix.y) + sub_pix.y);
+
+		r_x[i] = t1;
+		r_y[i] = t2;
+
+		parent->SetProgressPos(i);
+	}
+
+	AlignImage(r_x, r_y);
+
+	totalTime = clock() - totalTime;
+
+	DMresult << DMendl << "Aligned stack in: " << static_cast<float>(totalTime) / CLOCKS_PER_SEC << DMendl << DMendl;
+
+	parent->SetProgressPos(0);
 }
 
 void Alignment::OverDeterminedAlign()
@@ -240,10 +302,17 @@ std::vector<std::complex<float>> Alignment::CrossCorrelation(std::vector<std::co
 	(*clArgStore::kMultiCorrelation)(GlobalWork);
 
 	// Inverse correlation
-	(*(clArgStore::FFT))(clArgStore::ComplexBuffers[2], clArgStore::ComplexBuffers[2], Direction::Inverse);
-	(*(clArgStore::FFT))(clArgStore::ComplexBuffers[3], clArgStore::ComplexBuffers[3], Direction::Inverse);
+	if (correlation_method == 0)
+	{
+		(*(clArgStore::FFT))(clArgStore::ComplexBuffers[3], clArgStore::ComplexBuffers[3], Direction::Inverse);
+		clArgStore::kFFTShift->SetArg(0, clArgStore::ComplexBuffers[3], ArgumentType::Input);
+	}
+	else if (correlation_method == 1)
+	{
+		(*(clArgStore::FFT))(clArgStore::ComplexBuffers[2], clArgStore::ComplexBuffers[2], Direction::Inverse);
+		clArgStore::kFFTShift->SetArg(0, clArgStore::ComplexBuffers[2], ArgumentType::Input);
+	}
 
-	clArgStore::kFFTShift->SetArg(0, clArgStore::ComplexBuffers[3], ArgumentType::Input);
 	clArgStore::kFFTShift->SetArg(1, clArgStore::ComplexBuffers[1], ArgumentType::Output);
 	clArgStore::kFFTShift->SetArg(2, width);
 	clArgStore::kFFTShift->SetArg(3, height);

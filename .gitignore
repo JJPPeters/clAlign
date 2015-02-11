@@ -19,3 +19,7 @@ MyDlg1_work.h
 *.bat
 *.dmp
 *.aps
+*.ai
+*.png
+*.dm4
+*.dm3

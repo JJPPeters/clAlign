@@ -24,6 +24,11 @@ public:
 	DM::Image Image;
 	DM::ImageDisplay Display;
 
+	bool isSquarePow2()
+	{
+		return ((width != 0) && !(width & (width - 1))) && ((height != 0) && !(height & (height - 1))) && (width == height);
+	}
+
 	unsigned long getWidth(){ return width; };
 	unsigned long getHeight(){ return height; };
 	unsigned long getDepth(){ return depth; };

@@ -93,7 +93,8 @@ void LowerUpper<T>::decompose(const Matrix<T> &A)
 		// Apply previous transformations.
 		for (int i = 0; i<m; ++i)
 		{
-			LUrowi = LU[i];
+			//LUrowi = LU[i];
+			LUrowi = LU.getRow(i);
 
 			// Most of the time is spent in the following dot product.
 			int kmax = (i < j) ? i : j;
@@ -102,7 +103,9 @@ void LowerUpper<T>::decompose(const Matrix<T> &A)
 			for (int k = 0; k<kmax; ++k)
 				s += LUrowi[k] * LUcolj[k];
 
-			LUrowi[j] = LUcolj[i] -= s;
+			LUcolj[i] -= s;
+
+			LUrowi[j] = LUcolj[i];
 		}
 
 		// Find pivot and exchange if necessary.

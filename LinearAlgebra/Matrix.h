@@ -33,9 +33,9 @@ public:
 	// Access component (row,col)
 	const T& operator()(int row, int col) const;
 
-	std::vector<T>& operator[](int row);
+	//std::vector<T>& operator[](int row);
 
-	inline const std::vector<T>& operator[](int row) const;
+	//inline const std::vector<T>& operator[](int row) const;
 
 	// Gets the row of the matrix
 	std::vector<T> getRow(int row) const;
@@ -119,21 +119,21 @@ inline T& Matrix<T>::operator()(int row, int col)
 	return Data[row * nCols + col];
 }
 
-template<typename T>
-inline std::vector<T>& Matrix<T>::operator[](int row)
-{
-	std::vector<T>::const_iterator first = Data.begin() + row * nCols;
-	std::vector<T>::const_iterator last = Data.begin() + (row + 1) * nCols;
-	return std::vector<T>(first, last);
-}
-
-template<typename T>
-inline const std::vector<T>& Matrix<T>::operator[](int row) const
-{
-	std::vector<T>::const_iterator first = Data.begin() + row * nCols;
-	std::vector<T>::const_iterator last = Data.begin() + (row + 1) * nCols;
-	return std::vector<T>(first, last);
-}
+//template<typename T>
+//inline std::vector<T>& Matrix<T>::operator[](int row)
+//{
+//	std::vector<T>::const_iterator first = Data.begin() + row * nCols;
+//	std::vector<T>::const_iterator last = Data.begin() + (row + 1) * nCols;
+//	return std::vector<T>(first, last);
+//}
+//
+//template<typename T>
+//inline const std::vector<T>& Matrix<T>::operator[](int row) const
+//{
+//	std::vector<T>::const_iterator first = Data.begin() + row * nCols;
+//	std::vector<T>::const_iterator last = Data.begin() + (row + 1) * nCols;
+//	return std::vector<T>(first, last);
+//}
 
 template <typename T>
 std::vector<T> Matrix<T>::getRow(int row) const

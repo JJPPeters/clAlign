@@ -12,10 +12,13 @@ BEGIN_MESSAGE_MAP(CDMDialog, CDialog)
 	ON_WM_PAINT()
 	ON_WM_ERASEBKGND()
 	ON_BN_CLICKED(IDC_BTN_ALIGN, &CDMDialog::OnBnClickedBtnGpa)
+	//ON_BN_CLICKED(IDC_RDO_XCF, &CDMDialog::OnBnClickedBtnGpa)
+	//ON_BN_CLICKED(IDC_RDO_PCF, &CDMDialog::OnBnClickedBtnGpa)
 	ON_CBN_SELCHANGE(IDC_CMB_DEVICES, &CDMDialog::OnCbnSelchangeCmbDevices)
 END_MESSAGE_MAP()
 
-CDMDialog::CDMDialog(CWnd* pParent) : CDialog(CDMDialog::IDD, pParent), _mtx(new boost::mutex), s_bfactor("150"), s_thresh("5") {}
+CDMDialog::CDMDialog(CWnd* pParent) : CDialog(CDMDialog::IDD, pParent), _mtx(new boost::mutex), s_bfactor("150"), s_thresh("5")
+{}
 
 CDMDialog::~CDMDialog(){}
 
@@ -23,6 +26,9 @@ void CDMDialog::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_CMB_DEVICES, combo_CLdev);
+	DDX_Control(pDX, IDC_CMB_METHOD, combo_method);
+	DDX_Control(pDX, IDC_RDO_XCF, chk_XCF);
+	DDX_Control(pDX, IDC_RDO_PCF, chk_PCF);
 	DDX_Control(pDX, IDC_PROGRESS, progressBar);
 	DDX_Control(pDX, IDC_TXT_BFACT, txt_bfactor);
 	DDX_Text(pDX, IDC_TXT_BFACT, s_bfactor);
@@ -40,6 +46,18 @@ BOOL CDMDialog::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
+	int i;
+
+	i = combo_method.AddString("Normal");
+	combo_method.SetItemData(i, (DWORD)0);
+	i = combo_method.AddString("Overdetermined");
+	combo_method.SetItemData(i, (DWORD)1);
+	combo_method.SetCurSel(0);
+	combo_method.EnableWindow(true);
+
+	chk_XCF.SetCheck(1);
+	//chk_PCF.SetCheck(0);
+
 	Devices = OpenCL::GetDeviceList();
 	int numDevices = Devices.size();
 
@@ -51,7 +69,6 @@ BOOL CDMDialog::OnInitDialog()
 
 	for (std::list<clDevice>::iterator iterator = Devices.begin(), end = Devices.end(); iterator != end; ++iterator)
 	{
-		int i;
 		clDevice dev = *iterator;
 		i = combo_CLdev.AddString(dev.GetDeviceName().c_str());
 		combo_CLdev.SetItemData(i, (DWORD)ItemData);
@@ -91,7 +108,10 @@ void CDMDialog::OnBnClickedBtnGpa()
 	float Bf = boost::lexical_cast<float>(s_bfactor);
 	float thresh = boost::lexical_cast<float>(s_thresh);
 
-	Align.SetParameters(this, _mtx, Bf, thresh);
+	int method = combo_method.GetCurSel(); // 0 for normal, 1 for overdetermined
+	int corr = chk_PCF.GetCheck(); // 0 for XCF, 1 for PCF
+
+	Align.SetParameters(this, _mtx, Bf, thresh, method, corr);
 
 	Align.StartAlign();
 }

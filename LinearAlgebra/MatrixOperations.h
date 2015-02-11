@@ -48,7 +48,7 @@ Matrix<T> Transpose(const Matrix<T> &A)
 	Matrix<T> tmp(rows, cols);
 	for (int i = 0; i<rows; ++i)
 		for (int j = 0; j<cols; ++j)
-			tmp[i][j] = A[j][i];
+			tmp(i, j) = A(j, i);
 
 	return tmp;
 }

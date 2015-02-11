@@ -25,6 +25,9 @@ private:
 	//
 	void RemoveBlankFrames();
 
+	// Performss alignment from simple cross-correaltion between adjacent images
+	void NormalAlign();
+
 	// Performs an alignment by solving an overdetermined set of equations relating all shifts
 	void OverDeterminedAlign();
 
@@ -72,17 +75,25 @@ private:
 	// Complex flaot buffer used to get cropped output image. Different dimensions to image.
 	boost::shared_ptr<clMemory<std::complex<float>, Auto>> OutputBuffer;
 
+	// 0 for normal, 1 for overdetermined
+	int method;
+
+	// 0 for XCF, 1 for PCF
+	int correlation_method;
+
 public:
 	Alignment()// :
 		//parent(prnt), _mtx(dlg_mtx), Bfactor(Bf), threshold(thresh)
 	{}
 
-	void SetParameters(CDMDialog* prnt, boost::shared_ptr<boost::mutex> dlg_mtx, float Bf, float thresh)
+	void SetParameters(CDMDialog* prnt, boost::shared_ptr<boost::mutex> dlg_mtx, float Bf, float thresh, int meth, int corr)
 	{
 		parent = prnt;
 		_mtx = dlg_mtx;
 		Bfactor = Bf;
 		threshold = thresh;
+		method = meth;
+		correlation_method = corr;
 	}
 
 	void StartAlign();

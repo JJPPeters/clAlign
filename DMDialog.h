@@ -39,11 +39,14 @@ public:
 	afx_msg void OnBnClickedBtnGpa();
 private:
 	CComboBox combo_CLdev;
+	CComboBox combo_method;
 	CNumEdit txt_bfactor;
 	CString s_bfactor;
 	CNumEdit txt_thresh;
 	CString s_thresh;
 	CProgressCtrl progressBar;
+	CButton chk_XCF;
+	CButton chk_PCF;
 
 	boost::shared_ptr<boost::mutex> _mtx;
 	boost::mutex progress_mtx;
