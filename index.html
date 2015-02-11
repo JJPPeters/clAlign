@@ -35,18 +35,16 @@
 
 <p>Multiple alignment methods are implemented. A normal correlation and a method of solving an overdetermined equation as detailed by <a href="http://doi.org/10.1038/NMETH.2472">X. Li et al.</a>. In addition, both cross-correlation and phase-correlation can be used. Sub-pixel image shifts are applied using bilinear interpolation.</p>
 
-<p><img src="./Images/GUI.png" alt="clAlign GUI"></p>
+<p><img src="Images/GUI.png" alt="clAlign GUI" align="middle"></p>
 
 <ol>
 <li>OpenCL device selector</li>
 <li>Alignment method selector. Options are 'Normal' and 'Overdetermined.'</li>
 <li>Correlation method selectors for cross-correlation (XCF) and phase correlation (PCF).</li>
-<li>B factor. The B factor is used in masking the FFT in the correlation using
-<img src="http://www.sciweavers.org/tex2img.php?eq=e%5E%7B%5Cfrac%7B1%7D%7B2%7DBH%5E%7B2%7D%7D&amp;bc=White&amp;fc=Black&amp;im=jpg&amp;fs=12&amp;ff=arev&amp;edit=0" alt="e^{\frac{1}{2}BH^{2}}">
-where H is the spatial frequency (units of per pixel).</li>
-<li>Shift limit. Provides a limit on the error of the shifts when using the overdetermined alignment method.</li>
+<li>B factor. The B factor is used in masking the FFT in the correlation, see <a href="http://doi.org/10.1038/NMETH.2472">X. Li et al.</a> for more.</li>
+<li>Shift limit. Provides a limit on the error of the shifts when using the overdetermined alignment method, see <a href="http://doi.org/10.1038/NMETH.2472">X. Li et al.</a> for more.</li>
 <li>Progress bar.</li>
-<li>Start align button.</li>
+<li>Start alignment button.</li>
 </ol>
 
 <p>Small portions of the code provided by <a href="http://doi.org/10.1038/NMETH.2472">X. Li et al.</a> have been reused here (made available under the terms of the GNU Public License version 3 (GPLv3))</p>
